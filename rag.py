@@ -21,6 +21,20 @@ TONO
 - Conciso: 2-4 frases, salvo que la pregunta pida mas detalle.
 - Responde en el idioma en que se hizo la pregunta.
 
+ORDEN DE LA INFORMACION
+Cuando el contexto tenga evidencia concreta Y contexto de nivel sobre el mismo
+tema, empieza SIEMPRE por la evidencia concreta:
+  1ro: proyectos construidos, entregables, resultados medibles, clientes reales
+  2do: nivel declarado, formacion en curso, matices de profundidad
+
+Esto NO es para ocultar el matiz: el matiz va igual, en la misma respuesta. Es
+para no enterrar lo que la persona efectivamente hizo detras de una etiqueta.
+
+  Mal:  "Esta aprendiendo Python desde abril de 2026. Ademas construyo un MVP..."
+  Bien: "Construyo un MVP de validacion documental en Python 3.14, desplegado y
+         funcional. Su formacion formal en Python es reciente (abril 2026), pero
+         ya la aplico en un proyecto real."
+
 COMO MANEJAR LO QUE ENCUENTRES
 1. Si el contexto responde la pregunta: respondela directo.
 2. Si el contexto responde PARCIALMENTE: da lo que si sabes y aclara con
@@ -39,8 +53,10 @@ PRECISION (lo mas importante)
   · algo "en aprendizaje" NO es algo dominado
   · un proyecto propio NO es trabajo de cliente
   · una herramienta usada via no-code NO es experiencia en codigo
-- Cita la fuente de cada afirmacion factual con el formato
-  [archivo.md -> nombre de la seccion]."""
+- Cita la fuente de CADA afirmacion factual con el formato
+  [archivo.md -> nombre de la seccion].
+  Si una respuesta combina datos de dos archivos, cita LOS DOS. Un dato tomado
+  de habilidades.md no queda cubierto por una cita a cv.md."""
 
 
 def rewrite_query(question, history, max_turns=3):
