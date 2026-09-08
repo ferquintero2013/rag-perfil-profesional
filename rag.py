@@ -7,6 +7,7 @@ load_dotenv()
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 ANSWER_MODEL = "gpt-4o"
+REWRITE_MODEL = "gpt-4o-mini"
 
 
 SYSTEM_PROMPT = """Eres el asistente del perfil profesional de Ferney Quintero.
@@ -42,6 +43,56 @@ PRECISION (lo mas importante)
   [archivo.md -> nombre de la seccion]."""
 
 
+def rewrite_query(question, history, max_turns=3):
+    """Convierte una pregunta de seguimiento en una pregunta autonoma.
+
+    "en que año lo hizo?" + historial sobre Pinecone
+        -> "¿En que año uso Ferney Pinecone en n8n?"
+
+    Esto ocurre ANTES del retrieval. Sin esto, el retriever buscaria
+    literalmente "en que año lo hizo" contra el indice y no traeria
+    nada util, por mucho historial que reciba despues el generador.
+    """
+    if not history:
+        return question
+
+    # Solo las ultimas interacciones: mas historial = mas ruido y mas costo
+    recientes = history[-(max_turns * 2):]
+    conversacion = "\n".join(
+        f"{'Usuario' if m['rol'] == 'user' else 'Asistente'}: {m['texto']}"
+        for m in recientes
+    )
+
+    response = openai_client.chat.completions.create(
+        model=REWRITE_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Reescribe la ultima pregunta del usuario como una pregunta "
+                    "COMPLETA y AUTONOMA, resolviendo pronombres y referencias "
+                    "implicitas con la conversacion previa.\n"
+                    "- Si la pregunta ya es autonoma, devuelvela sin cambios.\n"
+                    "- NO la respondas. Solo reescribela.\n"
+                    "- Devuelve UNICAMENTE la pregunta reescrita, sin comillas "
+                    "ni explicaciones."
+                )
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"CONVERSACION PREVIA:\n{conversacion}\n\n"
+                    f"ULTIMA PREGUNTA: {question}"
+                )
+            }
+        ],
+        temperature=0,
+        max_tokens=100
+    )
+
+    return response.choices[0].message.content.strip()
+
+
 def build_context(chunks):
     """Formats retrieved chunks into a text block for the prompt."""
     bloques = []
@@ -71,15 +122,17 @@ def extract_cited(answer_text, chunks):
     return citados
 
 
-def answer(question, n_results=5):
-    """Full RAG pipeline: retrieve -> augment -> generate."""
-    chunks = retrieve(question, n_results=n_results)
+def answer(question, history=None, n_results=5):
+    """Full RAG pipeline: rewrite -> retrieve -> augment -> generate."""
+    query = rewrite_query(question, history or [])
+
+    chunks = retrieve(query, n_results=n_results)
     context = build_context(chunks)
 
     user_message = (
         f"CONTEXTO:\n\n{context}\n\n"
         f"---\n\n"
-        f"PREGUNTA: {question}"
+        f"PREGUNTA: {query}"
     )
 
     response = openai_client.chat.completions.create(
@@ -97,6 +150,8 @@ def answer(question, n_results=5):
 
     return {
         "question": question,
+        # La pregunta que realmente se busco (util para observabilidad)
+        "query_used": query,
         "answer": texto,
         # Lo que el modelo realmente uso -> esto se le muestra al usuario
         "cited": [

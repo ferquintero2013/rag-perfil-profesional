@@ -69,6 +69,9 @@ for mensaje in st.session_state.mensajes:
 pregunta = st.chat_input("Escribe tu pregunta...")
 
 if pregunta:
+    # El historial ANTES de esta pregunta (se usa para resolver referencias)
+    historial_previo = list(st.session_state.mensajes)
+
     # 1. Pintar y guardar la pregunta del usuario
     st.session_state.mensajes.append({"rol": "user", "texto": pregunta})
     with st.chat_message("user"):
@@ -78,7 +81,7 @@ if pregunta:
     with st.chat_message("assistant"):
         with st.spinner("Buscando en el perfil..."):
             try:
-                resultado = answer(pregunta)
+                resultado = answer(pregunta, history=historial_previo)
             except Exception as e:
                 st.error(f"Error al procesar la pregunta: {e}")
                 st.stop()
@@ -90,6 +93,11 @@ if pregunta:
             with st.expander("Ver fuentes"):
                 for f in resultado["cited"]:
                     st.caption(f"**{f['source']}** → {f['section']}")
+
+                # Si la pregunta se reescribio, mostrarlo (transparencia)
+                if resultado["query_used"] != resultado["question"]:
+                    st.divider()
+                    st.caption(f"_Pregunta interpretada como:_ {resultado['query_used']}")
 
     # 3. Guardar la respuesta en el historial
     st.session_state.mensajes.append({

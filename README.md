@@ -44,10 +44,20 @@ data/ (corpus publico)
    |  indexer.py     <- embeddings (text-embedding-3-small) -> ChromaDB
    v
 chroma_db/
+
+Por cada pregunta:
+
+pregunta + historial
    |
-   |  retriever.py   <- busqueda HIBRIDA: semantica + BM25, fusionadas con RRF
+   |  rag.rewrite_query()  <- resuelve pronombres y referencias (gpt-4o-mini)
    v
-   |  rag.py         <- contexto + grounding estricto -> GPT-4o -> respuesta citada
+pregunta autonoma
+   |
+   |  retriever.py         <- busqueda HIBRIDA: semantica + BM25, fusion RRF
+   v
+chunks relevantes
+   |
+   |  rag.answer()         <- grounding estricto -> GPT-4o -> respuesta citada
    v
 app.py (Streamlit)
 ```
@@ -58,7 +68,7 @@ app.py (Streamlit)
 | `loader.py` | Carga los `.md` y los parte en chunks por headers `##` / `###` |
 | `indexer.py` | Genera embeddings y construye el indice en ChromaDB |
 | `retriever.py` | Busqueda hibrida (vectorial + BM25) fusionada con RRF |
-| `rag.py` | Ensambla contexto, genera respuesta y filtra las fuentes realmente citadas |
+| `rag.py` | Reescribe la pregunta, ensambla contexto, genera respuesta y filtra fuentes citadas |
 | `app.py` | Interfaz de chat en Streamlit |
 
 ---
@@ -115,7 +125,26 @@ descuido posible.
 
 `gpt-4o` para generar las respuestas. Es contenido que leen reclutadores sobre una carrera
 real — el costo de una respuesta imprecisa es mucho mayor que la diferencia de precio
-por token.
+por token. `gpt-4o-mini` para reescribir preguntas: es una tarea sintactica, no de
+razonamiento.
+
+### 7. Query rewriting antes del retrieval, no despues
+
+Para soportar seguimientos (*"¿y en que año?"*) no basta con pasarle el historial al
+generador: **la busqueda ocurre antes**. El retriever buscaria literalmente `"y en que
+año"` contra el indice y traeria ruido, por mucho historial que reciba despues el modelo.
+
+La solucion es un paso previo que convierte la pregunta en autonoma usando la
+conversacion:
+
+```
+"¿en que año lo hizo?" + historial  ->  "¿En que año uso Ferney Pinecone en n8n?"
+```
+
+Detalles: ventana de 3 turnos (mas historial arrastra temas viejos a preguntas nuevas),
+`temperature=0` (la misma pregunta debe producir siempre la misma busqueda), y la
+pregunta reinterpretada se muestra en la UI — poder ver los pasos intermedios es lo que
+hace debuggeable un sistema de IA.
 
 ---
 
@@ -162,8 +191,8 @@ streamlit run app.py
 
 ## Limitaciones conocidas
 
-- **Sin memoria conversacional.** Cada pregunta se busca de forma independiente. Un
-  seguimiento como *"¿y en que año?"* no resuelve a que se refiere.
+- **La reescritura de pregunta anade una llamada extra al LLM** por turno (~0.3s y unos
+  pocos centavos por cada mil preguntas). Se salta cuando no hay historial.
 - **Corpus pequeno** (~37 chunks). Las distancias vectoriales viven en un rango estrecho
   porque todos los documentos hablan de la misma persona, asi que no es viable usar un
   umbral absoluto de distancia; solo el ranking relativo es util.
