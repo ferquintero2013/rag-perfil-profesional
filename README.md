@@ -4,7 +4,7 @@ Chatbot RAG que responde preguntas sobre la trayectoria profesional de Ferney Qu
 usando unicamente su CV y portafolio como fuente, con citacion obligatoria de la fuente
 de cada afirmacion.
 
-**Demo en vivo:** _(pendiente de deploy)_
+**Demo en vivo:** https://chat-perfil-ferney.streamlit.app/
 
 ---
 
