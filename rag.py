@@ -3,7 +3,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from retriever import retrieve
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 ANSWER_MODEL = "gpt-4o"

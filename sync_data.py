@@ -2,7 +2,7 @@ import os
 import shutil
 
 PERFIL_DIR = r"c:\Users\Usuario\Documents\Estudio claude\Agente personal\perfil"
-DATA_DIR = "./data"
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 # ALLOWLIST: solo estos archivos se publican.
 # Cualquier archivo nuevo en perfil/ es PRIVADO por defecto.

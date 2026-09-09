@@ -66,7 +66,23 @@ for mensaje in st.session_state.mensajes:
 
 
 # ============= INPUT =============
-pregunta = st.chat_input("Escribe tu pregunta...")
+# Tope por sesion: la app es publica y cada pregunta gasta tokens de mi cuenta.
+# No es seguridad (recargar la pagina lo reinicia); es un freno contra el uso
+# accidental en bucle. El limite duro va en la cuenta de OpenAI.
+MAX_PREGUNTAS = 12
+
+usadas = sum(1 for m in st.session_state.mensajes if m["rol"] == "user")
+sin_cupo = usadas >= MAX_PREGUNTAS
+
+if sin_cupo:
+    st.info(
+        f"Llegaste al limite de {MAX_PREGUNTAS} preguntas por sesion. "
+        "Recarga la pagina para empezar una conversacion nueva."
+    )
+elif usadas >= MAX_PREGUNTAS - 3:
+    st.caption(f"Te quedan {MAX_PREGUNTAS - usadas} preguntas en esta sesion.")
+
+pregunta = st.chat_input("Escribe tu pregunta...", disabled=sin_cupo)
 
 if pregunta:
     # El historial ANTES de esta pregunta (se usa para resolver referencias)

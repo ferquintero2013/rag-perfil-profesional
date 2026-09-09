@@ -4,10 +4,11 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from loader import build_corpus
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-CHROMA_PATH = "./chroma_db"
+CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db")
 COLLECTION_NAME = "perfil_ferney"
 EMBEDDING_MODEL = "text-embedding-3-small"
 

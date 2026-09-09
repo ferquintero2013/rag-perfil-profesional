@@ -9,9 +9,9 @@ venv/
 env/
 .venv/
 
-# Vector DB (regenerable, don't version)
-chroma_db/
-*.sqlite3
+# El indice vectorial SI se versiona: Streamlit Cloud no puede reconstruirlo
+# al arrancar sin pagar embeddings y ~40s de cold start en cada reinicio.
+# Regenerar con: python sync_data.py && python indexer.py
 
 # IDE
 .vscode/

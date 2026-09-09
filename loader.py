@@ -2,7 +2,8 @@ import os
 import re
 
 
-PERFIL_DIR = "./data"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PERFIL_DIR = os.path.join(BASE_DIR, "data")
 
 
 def load_markdown_files(directory):

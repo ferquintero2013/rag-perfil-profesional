@@ -5,16 +5,26 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from rank_bm25 import BM25Okapi
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-CHROMA_PATH = "./chroma_db"
+# Path relativo AL ARCHIVO, no al directorio de trabajo: en Streamlit Cloud
+# el cwd no es necesariamente la raiz del proyecto.
+CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db")
 COLLECTION_NAME = "perfil_ferney"
 EMBEDDING_MODEL = "text-embedding-3-small"
 
 # --- Load index once at import ---
 _chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
-_collection = _chroma_client.get_collection(name=COLLECTION_NAME)
+
+try:
+    _collection = _chroma_client.get_collection(name=COLLECTION_NAME)
+except Exception as e:
+    raise RuntimeError(
+        f"No se encontro el indice '{COLLECTION_NAME}' en {CHROMA_PATH}. "
+        "Construyelo con: python sync_data.py && python indexer.py"
+    ) from e
 
 _all = _collection.get(include=["documents", "metadatas"])
 _ids = _all["ids"]
