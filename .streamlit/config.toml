@@ -1,0 +1,14 @@
+# Colores tomados del panel oscuro del portafolio, para que el chat
+# embebido en el globo del robot se lea como parte de la pagina y no
+# como una aplicacion ajena incrustada.
+
+[theme]
+base = "dark"
+primaryColor = "#d1a45f"
+backgroundColor = "#16130e"
+secondaryBackgroundColor = "#221d15"
+textColor = "#f0e6d4"
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"
