@@ -1,53 +1,75 @@
 import streamlit as st
 from rag import answer
 
+# ?compact=1 -> la app va dentro de un iframe en el portafolio, donde el
+# titulo y la explicacion de "como funciona" ya estan en la pagina anfitriona.
+# Repetirlos ahi dentro se lee como dos paginas encajadas.
+COMPACTO = st.query_params.get("compact") == "1"
+
 st.set_page_config(
     page_title="Chat con el perfil de Ferney Quintero",
     page_icon="💬",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed" if COMPACTO else "expanded"
 )
 
+if COMPACTO:
+    # collapsed deja el boton para volver a abrirlo; aqui no queremos ninguno.
+    st.markdown(
+        """
+        <style>
+        [data-testid="stSidebar"],
+        [data-testid="stSidebarCollapsedControl"],
+        [data-testid="stHeader"] { display: none !important; }
+        .block-container { padding-top: 1.2rem !important; }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-# ============= HEADER =============
-st.title("💬 Chat con mi perfil profesional")
-st.caption(
-    "Preguntale lo que quieras sobre la experiencia, proyectos y habilidades "
-    "de Ferney Quintero. Las respuestas salen unicamente de su CV y portafolio, "
-    "con la fuente citada."
-)
+
+# ============= HEADER (solo fuera del iframe) =============
+if not COMPACTO:
+    st.title("💬 Chat con mi perfil profesional")
+    st.caption(
+        "Preguntale lo que quieras sobre la experiencia, proyectos y habilidades "
+        "de Ferney Quintero. Las respuestas salen unicamente de su CV y portafolio, "
+        "con la fuente citada."
+    )
 
 
-# ============= SIDEBAR =============
-with st.sidebar:
-    st.header("Como funciona")
-    st.markdown("""
-    Este chatbot usa **RAG** (Retrieval-Augmented Generation):
+# ============= SIDEBAR (solo fuera del iframe) =============
+if not COMPACTO:
+    with st.sidebar:
+        st.header("Como funciona")
+        st.markdown("""
+        Este chatbot usa **RAG** (Retrieval-Augmented Generation):
 
-    1. Tu pregunta se busca en el perfil por **significado** (embeddings)
-       y por **palabras exactas** (BM25)
-    2. Los dos rankings se combinan con **Reciprocal Rank Fusion**
-    3. Los fragmentos relevantes se pasan a **GPT-4o** como contexto
-    4. El modelo responde **solo** con esa informacion y cita la fuente
+        1. Tu pregunta se busca en el perfil por **significado** (embeddings)
+           y por **palabras exactas** (BM25)
+        2. Los dos rankings se combinan con **Reciprocal Rank Fusion**
+        3. Los fragmentos relevantes se pasan a **GPT-4o** como contexto
+        4. El modelo responde **solo** con esa informacion y cita la fuente
 
-    Si algo no esta en el perfil, lo dice. No inventa.
-    """)
+        Si algo no esta en el perfil, lo dice. No inventa.
+        """)
 
-    st.divider()
-    st.subheader("Preguntas de ejemplo")
-    ejemplos = [
-        "¿Tiene experiencia con Python?",
-        "¿Ha trabajado con clientes reales?",
-        "¿Que sabe de Odoo y ERPs?",
-        "¿Ha liderado equipos?",
-        "¿Cual es su proyecto mas reciente?",
-    ]
-    for ej in ejemplos:
-        st.markdown(f"- {ej}")
+        st.divider()
+        st.subheader("Preguntas de ejemplo")
+        ejemplos = [
+            "¿Tiene experiencia con Python?",
+            "¿Ha trabajado con clientes reales?",
+            "¿Que sabe de Odoo y ERPs?",
+            "¿Ha liderado equipos?",
+            "¿Cual es su proyecto mas reciente?",
+        ]
+        for ej in ejemplos:
+            st.markdown(f"- {ej}")
 
-    st.divider()
-    st.caption("**Stack**: Python · Streamlit · OpenAI · ChromaDB · BM25")
-    st.markdown("[Portafolio](https://ferney-portfolio.vercel.app/)")
-    st.markdown("[Codigo de este proyecto](https://github.com/ferquintero2013)")
+        st.divider()
+        st.caption("**Stack**: Python · Streamlit · OpenAI · ChromaDB · BM25")
+        st.markdown("[Portafolio](https://ferney-portfolio.vercel.app/)")
+        st.markdown("[Codigo de este proyecto](https://github.com/ferquintero2013/rag-perfil-profesional)")
 
 
 # ============= HISTORIAL =============
