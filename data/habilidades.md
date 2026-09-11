@@ -75,8 +75,8 @@
 | Claude API / Anthropic SDK | 2026-04 | Documentacion oficial | Iniciando |
 | LangChain | 2026-05 | Tutorial oficial + proyecto FTC | Pendiente |
 | RAG en no-code (n8n + Vector Store) | 2025 | Proyecto propio | **Completado**: flujo RAG funcional en n8n con Vector Store node (Pinecone). Sin codigo propio — orquestacion no-code. |
-| RAG con codigo (Python + Vector DB) | 2026-05 | Proyecto propio `rag_portfolio` | **En progreso** (desde 2026-09-03): chunking estructural por headers y embeddings + ChromaDB implementados en Python. Pendiente: retrieval con HyDE, generacion, UI y deploy. |
-| Vector databases | 2026-05 | Proyecto propio `rag_portfolio` | **En progreso**: ChromaDB local (PersistentClient, collections, metadata, query por embeddings). Pinecone conocido via n8n, no via codigo. |
+| RAG con codigo (Python + Vector DB) | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: sistema completo en Python — chunking estructural, embeddings, ChromaDB, retrieval hibrido (BM25 + vectorial con RRF), query rewriting y grounding. Desplegado: https://chat-perfil-ferney.streamlit.app/ |
+| Vector databases | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: ChromaDB via codigo (PersistentClient, collections, metadata, query por embeddings, persistencia). Pinecone sigue siendo solo via n8n, no via codigo. |
 
 ## Plan de aprendizaje completo
 Ver `coaching/plan-aprendizaje-ia.md` para roadmap detallado de 12 semanas.

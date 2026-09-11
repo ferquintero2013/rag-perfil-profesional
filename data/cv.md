@@ -72,6 +72,14 @@ Automation Engineer con trayectoria que abarca roles clave del ciclo de vida de 
 
 ## Proyectos tecnicos publicos
 
+### Chatbot RAG sobre CV y portafolio | Septiembre 2026
+Sistema RAG que responde preguntas sobre mi trayectoria profesional usando unicamente mi CV y portafolio como fuente, con citacion obligatoria de la fuente de cada afirmacion.
+- **Stack**: Python, Streamlit, ChromaDB, BM25 (rank-bm25), OpenAI (text-embedding-3-small + GPT-4o). Desarrollado con Claude Code.
+- **Decision tecnica clave**: busqueda hibrida (BM25 + embeddings fusionados con Reciprocal Rank Fusion). La busqueda puramente vectorial fallaba en preguntas sobre entidades nombradas ("¿sabe X?") por dilucion semantica en chunks tematicamente mixtos. HyDE se probo y se descarto con datos: mejoraba las distancias mientras empeoraba la relevancia.
+- **Otras piezas**: query rewriting previo al retrieval para soportar preguntas de seguimiento, grounding estricto anti-alucinacion, y curacion del corpus por allowlist explicita.
+- **Demo publico**: https://chat-perfil-ferney.streamlit.app/
+- **Codigo**: https://github.com/ferquintero2013/rag-perfil-profesional
+
 ### MVP de Validacion Inteligente de Documentos con IA | Agosto - Septiembre 2026
 Sistema end-to-end de validacion automatizada de expedientes de admision universitaria, construido integramente en Python. Extrae datos de documentos con GPT-4o Vision, aplica reglas de negocio auditables, hace cross-check de identidad entre documentos para detectar posibles suplantaciones, y genera notificaciones personalizadas con IA.
 - **Stack**: Python 3.14, Streamlit, OpenAI GPT-4o Vision + GPT-4o-mini, GitHub API. Desarrollado con Claude Code.
