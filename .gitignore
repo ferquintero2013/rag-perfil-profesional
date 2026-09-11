@@ -9,9 +9,10 @@ venv/
 env/
 .venv/
 
-# El indice vectorial SI se versiona: Streamlit Cloud no puede reconstruirlo
-# al arrancar sin pagar embeddings y ~40s de cold start en cada reinicio.
-# Regenerar con: python sync_data.py && python indexer.py
+# chroma_db ya no se usa: el indice vive en index_meta.json +
+# index_vectors.npy, que SI se versionan (son pequenos y el despliegue
+# los necesita). Regenerar con: python sync_data.py && python indexer.py
+chroma_db/
 
 # IDE
 .vscode/

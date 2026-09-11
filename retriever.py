@@ -1,6 +1,8 @@
+import json
 import os
 import re
-import chromadb
+
+import numpy as np
 from openai import OpenAI
 from dotenv import load_dotenv
 from rank_bm25 import BM25Okapi
@@ -9,48 +11,34 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Path relativo AL ARCHIVO, no al directorio de trabajo: en Streamlit Cloud
-# el cwd no es necesariamente la raiz del proyecto.
-CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db")
-COLLECTION_NAME = "perfil_ferney"
+META_PATH = os.path.join(BASE_DIR, "index_meta.json")
+VECTORS_PATH = os.path.join(BASE_DIR, "index_vectors.npy")
 EMBEDDING_MODEL = "text-embedding-3-small"
 
-# --- Load index once at import ---
-_chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
 
-try:
-    _collection = _chroma_client.get_collection(name=COLLECTION_NAME)
-except Exception as e:
-    raise RuntimeError(
-        f"No se encontro el indice '{COLLECTION_NAME}' en {CHROMA_PATH}. "
-        "Construyelo con: python sync_data.py && python indexer.py"
-    ) from e
+# --- indice en memoria, cargado una sola vez al importar ---
+with open(META_PATH, encoding="utf-8") as f:
+    _meta = json.load(f)
 
-_all = _collection.get(include=["documents", "metadatas"])
-_ids = _all["ids"]
-_docs = _all["documents"]
-_metas = _all["metadatas"]
+_chunks = _meta["chunks"]
+_ids = [c["id"] for c in _chunks]
+_by_id = {c["id"]: c for c in _chunks}
 
-_by_id = {
-    _ids[i]: {
-        "text": _docs[i],
-        "source": _metas[i]["source"],
-        "section": _metas[i]["section"]
-    }
-    for i in range(len(_ids))
-}
+# Los vectores vienen ya normalizados desde export_index.py, asi que el
+# producto punto ES la similitud coseno. No hay que normalizar por consulta.
+_vectors = np.load(VECTORS_PATH)
 
 
 def tokenize(text):
-    """Splits text into lowercase words for keyword matching."""
+    """Divide en palabras en minuscula para la busqueda por terminos."""
     return re.findall(r"[a-z0-9aeiouñ]+", text.lower())
 
 
-_bm25 = BM25Okapi([tokenize(d) for d in _docs])
+_bm25 = BM25Okapi([tokenize(c["text"]) for c in _chunks])
 
 
 def get_embedding(text):
-    """Converts a text into a vector of 1536 dimensions."""
+    """Convierte un texto en un vector de 1536 dimensiones."""
     response = openai_client.embeddings.create(
         model=EMBEDDING_MODEL,
         input=text
@@ -59,26 +47,34 @@ def get_embedding(text):
 
 
 def search_semantic(question, n=10):
-    """Vector search: finds chunks with similar MEANING."""
-    results = _collection.query(
-        query_embeddings=[get_embedding(question)],
-        n_results=n
-    )
-    return results["ids"][0]
+    """Busqueda por significado. Toda la operacion es una multiplicacion.
+
+    Con los vectores normalizados, la similitud coseno se reduce al
+    producto punto: (37, 1536) @ (1536,) -> (37,), un score por chunk.
+    """
+    q = np.array(get_embedding(question), dtype=np.float32)
+    q /= np.linalg.norm(q)
+
+    scores = _vectors @ q
+
+    # argsort ordena de menor a mayor; el signo menos invierte el orden
+    mejores = np.argsort(-scores)[:n]
+    return [_ids[i] for i in mejores]
 
 
 def search_keyword(question, n=10):
-    """BM25 search: finds chunks with matching WORDS."""
+    """Busqueda por palabras exactas (BM25)."""
     scores = _bm25.get_scores(tokenize(question))
     ranked = sorted(zip(_ids, scores), key=lambda pair: -pair[1])
     return [chunk_id for chunk_id, score in ranked[:n] if score > 0]
 
 
 def reciprocal_rank_fusion(rankings, k=60):
-    """Merges several rankings into one.
+    """Combina varios rankings usando solo la posicion, no los scores.
 
-    A chunk that appears high in MULTIPLE rankings beats a chunk that
-    appears very high in only one. k=60 is the standard damping constant.
+    BM25 devuelve valores tipo 4.7 y la similitud coseno valores entre
+    -1 y 1: son escalas incomparables, promediarlas no significa nada.
+    RRF ignora la magnitud y solo mira el puesto.
     """
     scores = {}
     for ranking in rankings:
@@ -88,7 +84,7 @@ def reciprocal_rank_fusion(rankings, k=60):
 
 
 def retrieve(question, n_results=5):
-    """Hybrid retrieval: semantic + keyword, merged with RRF."""
+    """Recuperacion hibrida: semantica + palabras clave, fusionadas con RRF."""
     semantic_ids = search_semantic(question, n=10)
     keyword_ids = search_keyword(question, n=10)
 
@@ -96,12 +92,12 @@ def retrieve(question, n_results=5):
 
     chunks = []
     for chunk_id, score in fused[:n_results]:
-        chunk = _by_id[chunk_id]
+        c = _by_id[chunk_id]
         chunks.append({
-            "text": chunk["text"],
-            "source": chunk["source"],
-            "section": chunk["section"],
-            "score": score
+            "text": c["text"],
+            "source": c["source"],
+            "section": c["section"],
+            "score": score,
         })
 
     return chunks
@@ -112,14 +108,15 @@ if __name__ == "__main__":
         "¿Tiene experiencia con Python?",
         "¿Sabe usar Pinecone?",
         "¿Que sabe de Odoo?",
-        "¿Ha liderado equipos?"
+        "¿Ha liderado equipos?",
     ]
+
+    print(f"Indice: {_meta['count']} chunks, {_meta['dimensions']} dimensiones\n")
 
     for pregunta in preguntas:
         print("=" * 70)
         print(f"PREGUNTA: {pregunta}")
         print("=" * 70)
-
         for i, chunk in enumerate(retrieve(pregunta, n_results=4)):
             print(f"{i + 1}. rrf={chunk['score']:.4f}  "
                   f"[{chunk['source']}] {chunk['section'][:50]}")

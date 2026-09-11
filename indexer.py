@@ -1,89 +1,103 @@
+import json
 import os
-import chromadb
+from datetime import date
+
+import numpy as np
 from openai import OpenAI
 from dotenv import load_dotenv
+
 from loader import build_corpus
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db")
-COLLECTION_NAME = "perfil_ferney"
+META_PATH = os.path.join(BASE_DIR, "index_meta.json")
+VECTORS_PATH = os.path.join(BASE_DIR, "index_vectors.npy")
 EMBEDDING_MODEL = "text-embedding-3-small"
 
+# La API acepta varios textos por llamada. Agrupar evita 37 viajes de red
+# donde basta con uno, y deja el indexado igual de barato cuando el corpus
+# crezca a cientos o miles de chunks.
+BATCH_SIZE = 100
 
-def get_embedding(text):
-    """Converts a text into a vector of 1536 dimensions."""
+
+def embed_batch(textos):
+    """Genera los embeddings de varios textos en una sola llamada."""
     response = openai_client.embeddings.create(
         model=EMBEDDING_MODEL,
-        input=text
+        input=textos
     )
-    return response.data[0].embedding
+    # La API devuelve el indice de cada entrada: ordenar por el es gratis
+    # y elimina la suposicion de que el orden se conserva.
+    return [d.embedding for d in sorted(response.data, key=lambda d: d.index)]
 
 
 def build_index():
-    """Generates embeddings for all chunks and stores them in ChromaDB."""
+    """Construye el indice desde data/ y lo guarda en dos archivos planos.
+
+    No se usa base de datos vectorial: a esta escala los embeddings caben
+    en memoria y la busqueda es una multiplicacion de matriz (ver
+    retriever.py). El umbral para replantearlo esta en torno a los 10.000
+    chunks, cuando el .npy pase de unas decenas de MB.
+    """
     corpus = build_corpus()
-    print(f"\nGenerando embeddings para {len(corpus)} chunks...\n")
+    print(f"\nGenerando embeddings para {len(corpus)} chunks...")
 
-    chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
+    vectores = []
+    for inicio in range(0, len(corpus), BATCH_SIZE):
+        lote = corpus[inicio:inicio + BATCH_SIZE]
+        print(f"  [{inicio + 1}-{inicio + len(lote)}/{len(corpus)}]")
+        vectores.extend(embed_batch([c["text"] for c in lote]))
 
-    # Rebuild from scratch each run
-    try:
-        chroma_client.delete_collection(name=COLLECTION_NAME)
-        print("  (coleccion anterior eliminada)\n")
-    except Exception:
-        pass
+    matriz = np.array(vectores, dtype=np.float32)
 
-    collection = chroma_client.create_collection(name=COLLECTION_NAME)
+    # Se normaliza aqui, una vez. Con vectores de norma 1 la similitud
+    # coseno es exactamente el producto punto, asi que el retriever no
+    # tiene que normalizar en cada consulta.
+    matriz /= np.linalg.norm(matriz, axis=1, keepdims=True)
 
-    ids = []
-    documents = []
-    embeddings = []
-    metadatas = []
+    meta = {
+        "model": EMBEDDING_MODEL,
+        "dimensions": int(matriz.shape[1]),
+        "count": len(corpus),
+        "normalized": True,
+        "exported": date.today().isoformat(),
+        "chunks": [
+            {
+                "id": f"chunk_{i:03d}",
+                "source": c["source"],
+                "section": c["section"],
+                "text": c["text"],
+            }
+            for i, c in enumerate(corpus)
+        ],
+    }
 
-    for idx, chunk in enumerate(corpus):
-        print(f"  [{idx + 1}/{len(corpus)}] {chunk['section'][:60]}")
+    with open(META_PATH, "w", encoding="utf-8") as f:
+        json.dump(meta, f, ensure_ascii=False, indent=1)
 
-        ids.append(f"chunk_{idx:03d}")
-        documents.append(chunk["text"])
-        embeddings.append(get_embedding(chunk["text"]))
-        metadatas.append({
-            "source": chunk["source"],
-            "section": chunk["section"]
-        })
+    np.save(VECTORS_PATH, matriz)
 
-    collection.add(
-        ids=ids,
-        documents=documents,
-        embeddings=embeddings,
-        metadatas=metadatas
-    )
+    def kb(path):
+        return os.path.getsize(path) / 1024
 
-    print(f"\nIndice creado: {collection.count()} chunks guardados en '{CHROMA_PATH}'")
-    return collection
+    print("\nIndice construido:")
+    print(f"  {len(corpus)} chunks, {matriz.shape[1]} dimensiones")
+    print(f"  {os.path.basename(META_PATH):22} {kb(META_PATH):7.0f} KB")
+    print(f"  {os.path.basename(VECTORS_PATH):22} {kb(VECTORS_PATH):7.0f} KB")
 
 
 if __name__ == "__main__":
-    collection = build_index()
+    build_index()
 
-    # Quick smoke test: does semantic search actually work?
     print("\n" + "=" * 60)
-    print("PRUEBA DE BUSQUEDA SEMANTICA")
+    print("PRUEBA DE BUSQUEDA")
     print("=" * 60)
 
+    from retriever import retrieve
+
     pregunta = "¿Tiene experiencia con Python?"
-    print(f"\nPregunta: {pregunta}\n")
-
-    resultados = collection.query(
-        query_embeddings=[get_embedding(pregunta)],
-        n_results=3
-    )
-
-    for i, doc in enumerate(resultados["documents"][0]):
-        meta = resultados["metadatas"][0][i]
-        distancia = resultados["distances"][0][i]
-        print(f"{i + 1}. [{meta['source']}] {meta['section']}")
-        print(f"   distancia: {distancia:.4f}")
-        print(f"   {doc[:150]}...\n")
+    print(f"\n{pregunta}\n")
+    for i, c in enumerate(retrieve(pregunta, n_results=3)):
+        print(f"{i + 1}. [{c['source']}] {c['section'][:52]}")
