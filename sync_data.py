@@ -4,8 +4,9 @@ import shutil
 PERFIL_DIR = r"c:\Users\Usuario\Documents\Estudio claude\Agente personal\perfil"
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
-# ALLOWLIST: solo estos archivos se publican.
-# Cualquier archivo nuevo en perfil/ es PRIVADO por defecto.
+# ALLOWLIST: de perfil/ solo se copian estos archivos.
+# Cualquier archivo nuevo alli es PRIVADO por defecto — publicar tiene que
+# ser un acto deliberado, no un descuido posible.
 ARCHIVOS_PUBLICOS = [
     "cv.md",
     "portafolio.md",
@@ -15,40 +16,66 @@ ARCHIVOS_PUBLICOS = [
 
 
 def sync():
-    """Copia solo los archivos de la allowlist a data/."""
+    """Copia los archivos de la allowlist, sin tocar el contenido propio.
+
+    En data/ conviven dos origenes:
+
+      - Copias de perfil/, que este script gestiona. Se sobrescriben en
+        cada ejecucion, asi que editarlas aqui no sirve de nada: la fuente
+        de verdad es perfil/.
+
+      - Archivos propios del asistente, puestos a mano. Notas de proyecto,
+        preguntas frecuentes, casos de estudio... contenido que pertenece
+        al asistente y no al perfil de coaching. Estos NO se tocan.
+
+    Solo se borran los que este script mismo copia. Borrar todo dejaria
+    fuera el contenido propio en la siguiente ejecucion, y en silencio.
+    """
     os.makedirs(DATA_DIR, exist_ok=True)
 
-    # Limpiar data/ para que no queden archivos huerfanos
-    for existente in os.listdir(DATA_DIR):
-        if existente.endswith(".md"):
-            os.remove(os.path.join(DATA_DIR, existente))
+    # Se limpian solo las copias gestionadas, para que un archivo retirado
+    # de la allowlist tampoco siga publicado.
+    for nombre in ARCHIVOS_PUBLICOS:
+        ruta = os.path.join(DATA_DIR, nombre)
+        if os.path.exists(ruta):
+            os.remove(ruta)
 
     copiados = []
     for nombre in ARCHIVOS_PUBLICOS:
         origen = os.path.join(PERFIL_DIR, nombre)
 
         if not os.path.exists(origen):
-            print(f"  AVISO: {nombre} no existe en perfil/, se omite")
+            print(f"  AVISO   {nombre} no existe en perfil/, se omite")
             continue
 
         destino = os.path.join(DATA_DIR, nombre)
         shutil.copy2(origen, destino)
-        tam = os.path.getsize(destino)
         copiados.append(nombre)
-        print(f"  OK  {nombre}  ({tam} bytes)")
+        print(f"  perfil  {nombre:26} {os.path.getsize(destino) / 1024:6.1f} KB")
 
-    # Reportar lo que NO se copio, para revision consciente
+    # Lo que vive en data/ sin venir de perfil/: contenido propio.
+    propios = sorted(
+        f for f in os.listdir(DATA_DIR)
+        if f.endswith(".md") and f not in ARCHIVOS_PUBLICOS
+    )
+    for nombre in propios:
+        ruta = os.path.join(DATA_DIR, nombre)
+        print(f"  propio  {nombre:26} {os.path.getsize(ruta) / 1024:6.1f} KB")
+
+    # Lo que existe en perfil/ y NO se publica. Se lista siempre: un
+    # control de privacidad que no se ve acaba olvidandose.
     todos = [f for f in os.listdir(PERFIL_DIR) if f.endswith(".md")]
-    excluidos = [f for f in todos if f not in ARCHIVOS_PUBLICOS]
-
+    excluidos = sorted(f for f in todos if f not in ARCHIVOS_PUBLICOS)
     if excluidos:
-        print(f"\n  Excluidos (privados): {', '.join(excluidos)}")
+        print(f"\n  Privados, no se publican: {', '.join(excluidos)}")
 
-    return copiados
+    return copiados, propios
 
 
 if __name__ == "__main__":
-    print("Sincronizando corpus publico desde perfil/...\n")
-    copiados = sync()
-    print(f"\n{len(copiados)} archivos sincronizados a {DATA_DIR}")
-    print("\nSiguiente paso: python indexer.py")
+    print("Sincronizando corpus del asistente...\n")
+    copiados, propios = sync()
+    total = len(copiados) + len(propios)
+    print(f"\n  {total} archivos en el corpus "
+          f"({len(copiados)} desde perfil/, {len(propios)} propios)")
+    print("\n  Siguiente paso: python indexer.py")
