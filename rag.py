@@ -139,6 +139,35 @@ def extract_cited(answer_text, chunks):
     return citados
 
 
+# Frases con las que el modelo declina cuando el dato no esta en el corpus.
+def detect_mood(answer_text, citados):
+    """Deriva el estado de animo del asistente de lo que ya sabemos.
+
+    No se le pregunta al modelo: la senal ya esta en si cito fuentes o no.
+    El prompt le obliga a citar toda afirmacion factual, asi que no citar
+    nada significa que no tenia nada que afirmar.
+
+    Deliberadamente NO se buscan frases tipo "no tengo esa informacion".
+    Esa lista nunca queda completa: el modelo redacta la negativa distinto
+    cada vez ("no hay informacion documentada", "no consta", "el CV no
+    refleja"). La longitud es una senal estructural en vez de lexica, asi
+    que no depende de la redaccion ni del idioma.
+
+    Devuelve uno de: confident | answering | declined | unsure
+    """
+    if citados:
+        return "confident" if len(citados) >= 2 else "answering"
+
+    # Sin fuentes citadas: o declino, o respondio sin respaldo.
+    if len(answer_text) < 220:
+        return "declined"
+
+    # Respuesta larga sin una sola cita. El system prompt lo prohibe, asi
+    # que esto es una anomalia — y el robot poniendo cara rara la hace
+    # visible desde la interfaz.
+    return "unsure"
+
+
 def answer(question, history=None, n_results=5):
     """Full RAG pipeline: rewrite -> retrieve -> augment -> generate."""
     query = rewrite_query(question, history or [])
@@ -171,6 +200,7 @@ def answer(question, history=None, n_results=5):
         "query_used": query,
         "answer": texto,
         # Lo que el modelo realmente uso -> esto se le muestra al usuario
+        "mood": detect_mood(texto, citados),
         "cited": [
             {"source": c["source"], "section": c["section"]}
             for c in citados
