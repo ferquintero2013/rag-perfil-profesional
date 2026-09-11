@@ -7,7 +7,7 @@
 - **Email**: ferquintero2013@gmail.com
 - **LinkedIn**: linkedin.com/in/ferneyquintero-7301b547
 - **Ubicacion**: Bogota, Colombia
-- **Disponibilidad**: Inmediata (trabaja actualmente en Fajas Forma Tu Cuerpo + consultoria independiente)
+- **Disponibilidad**: Abierto a conversar sobre proyectos y oportunidades de ingenieria de IA
 
 ## Resumen profesional
 Ingeniero de IA. Construye sistemas con inteligencia artificial de punta a punta: agentes, asistentes sobre documentos (RAG), extraccion estructurada con modelos de vision y automatizacion de procesos entre sistemas.
