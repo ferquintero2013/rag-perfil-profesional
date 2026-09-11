@@ -80,11 +80,10 @@
 - **Sitio publico**: https://ferney-portfolio.vercel.app/
 - **GitHub**: https://github.com/ferquintero2013
 
-## Certificaciones
+## Certificaciones y formacion
 
-- 1er Lugar — Best AI Automation, n8n EmprendIA LATAM Hackathon (2025)
-- Claude Code: Software Engineering with Generative AI Agents (Anthropic)
-- n8n: Agentes y automatizaciones de IA
-- AWS Certified Cloud Practitioner
-- Certified SAFe 5 Scrum Master
-- Lean Portfolio Management (ICP-LPM)
+**IA y datos:** 1er Lugar Best AI Automation, hackathon n8n EmprendIA LATAM (2025) · Claude Code: Software Engineering with Generative AI Agents (Vanderbilt University) · n8n: Agentes y automatizaciones de IA (Udemy) · Generative AI for Business Leaders (LinkedIn) · Inteligencia Artificial: ChatGPT, DALL-E y Hugging Face (Platzi) · Analisis de Datos con Power BI (Platzi)
+
+**Ingenieria y cloud:** AWS Certified Cloud Practitioner (AWS) · Arquitectura de Software (Platzi) · Curso Practico de Frontend Developer (Platzi) · Experto en Zapier
+
+**Gestion (complementaria al rol tecnico):** Lean Portfolio Management ICP-LPM (ICAgile) · Certified SAFe 5 Scrum Master

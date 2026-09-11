@@ -1,5 +1,11 @@
 # Inventario de Habilidades - Ferney Quintero
 
+## Sobre el enfoque profesional
+
+El rol primario de Ferney es **Ingeniero de IA**: construye agentes, asistentes sobre documentos, extraccion con modelos de vision y automatizacion entre sistemas.
+
+Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son **complementarias** y explican su diferenciador — sabe mapear un proceso y alinear a los interesados antes de construir — pero no son su profesion actual. Los proyectos que lidera son de inteligencia artificial, agentes y automatizacion; no busca roles de PM ni de Scrum Master puros.
+
 ## AI y Automatizacion
 
 | Habilidad | Nivel (1-5) | Anos experiencia | Ultimo uso | Notas |

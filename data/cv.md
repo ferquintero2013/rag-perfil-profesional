@@ -2,14 +2,19 @@
 
 ## Datos de contacto
 - **Nombre**: Ferney Quintero
-- **Titulo**: AI Automation Engineer / Software Engineer / Project Manager
+- **Titulo**: Ingeniero de IA (AI Engineer)
+- **Perfil complementario**: Software Engineer · Analista de negocio · Gerencia de proyectos de IA
 - **Email**: ferquintero2013@gmail.com
 - **LinkedIn**: linkedin.com/in/ferneyquintero-7301b547
 - **Ubicacion**: Bogota, Colombia
 - **Disponibilidad**: Inmediata (trabaja actualmente en Fajas Forma Tu Cuerpo + consultoria independiente)
 
 ## Resumen profesional
-Automation Engineer con trayectoria que abarca roles clave del ciclo de vida de desarrollo de software: analista de negocio, desarrollador, y project manager. Esta combinacion le da un entendimiento profundo de workflows organizacionales, procesos y necesidades operativas. Con el auge de la IA, pivoteo su carrera hacia automatizacion inteligente, aprovechando su conocimiento de negocio, habilidades tecnicas y experiencia liderando iniciativas tecnologicas. Actualmente disena, implementa e integra automatizaciones impulsadas por IA y soluciones de orquestacion de procesos que maximizan eficiencia, reducen carga operativa y aseguran escalabilidad.
+Ingeniero de IA. Construye sistemas con inteligencia artificial de punta a punta: agentes, asistentes sobre documentos (RAG), extraccion estructurada con modelos de vision y automatizacion de procesos entre sistemas.
+
+Llega a la IA despues de trece anos recorriendo el ciclo completo de desarrollo de software — desarrollador, QA lead, analista de negocio, project manager y Agile Coach. Esa trayectoria es lo que le permite leer un proceso antes de automatizarlo y dimensionar una solucion a su escala real, en vez de aplicar la herramienta de moda a cualquier problema.
+
+**Sobre su perfil profesional:** su rol primario es Ingeniero de IA. La experiencia en gerencia de proyectos y agilismo es complementaria, no su profesion actual: aporta la capacidad de mapear procesos, alinear stakeholders y estimar alcance, que es lo que suele faltarle a un perfil puramente tecnico. Los proyectos que lidera son de inteligencia artificial, agentes y automatizacion; no busca ni ejerce roles de PM o Scrum Master puros.
 
 ## Experiencia laboral
 
@@ -93,16 +98,26 @@ Sistema end-to-end de validacion automatizada de expedientes de admision univers
 
 ### Universidad Catolica de Colombia | Ingeniero de Sistemas | 2007 - 2012
 
-## Certificaciones
-- 1st Place - Best AI Automation | n8n EmprendIA LATAM Hackathon (2025)
-- Claude Code: Software Engineering with Generative AI Agents (Anthropic)
-- n8n: Agentes y automatizaciones de IA
-- AWS Certified Cloud Practitioner
-- Certified SAFe 5 Scrum Master
-- Lean Portfolio Management (ICP-LPM)
-- Becoming an Agile Coach
-- Curso Practico de Frontend Developer
-- Experto en Zapier
+## Certificaciones y formacion
+
+### Inteligencia artificial y datos
+- **1er Lugar — Best AI Automation**, hackathon n8n EmprendIA LATAM (2025)
+- **Claude Code: Software Engineering with Generative AI Agents** — Vanderbilt University
+- **n8n: Agentes y automatizaciones de IA** — Udemy
+- **Generative AI for Business Leaders** — LinkedIn
+- **Inteligencia Artificial: ChatGPT, DALL-E y Hugging Face** — Platzi
+- **Analisis de Datos con Power BI** — Platzi
+
+### Ingenieria y cloud
+- **AWS Certified Cloud Practitioner** — Amazon Web Services (AWS)
+- **Arquitectura de Software** — Platzi
+- **Curso Practico de Frontend Developer** — Platzi
+- **Experto en Zapier** — Zapier
+
+### Gestion (formacion complementaria, no rol primario)
+- **Lean Portfolio Management ICP-LPM** — ICAgile
+- **Certified SAFe 5 Scrum Master** — Scaled Agile
+- **Becoming an Agile Coach**
 
 ## Idiomas
 - Espanol: Nativo
@@ -112,3 +127,8 @@ Sistema end-to-end de validacion automatizada de expedientes de admision univers
 - Claude Skills
 - Anthropic Claude
 - Vibe Coding
+- n8n
+- software development
+- Business analysis
+- Project management
+- Agile methodologiest
