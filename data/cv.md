@@ -16,6 +16,30 @@ Llega a la IA despues de trece anos recorriendo el ciclo completo de desarrollo 
 
 **Sobre su perfil profesional:** su rol primario es Ingeniero de IA. La experiencia en gerencia de proyectos y agilismo es complementaria, no su profesion actual: aporta la capacidad de mapear procesos, alinear stakeholders y estimar alcance, que es lo que suele faltarle a un perfil puramente tecnico. Los proyectos que lidera son de inteligencia artificial, agentes y automatizacion; no busca ni ejerce roles de PM o Scrum Master puros.
 
+## Trayectoria en orden cronologico (de lo mas reciente a lo mas antiguo)
+
+**Su empleo actual, el ultimo y mas reciente de su hoja de vida, es en Fajas Forma Tu Cuerpo Shapewear**, desde marzo de 2026, como Software Development Lead - AI & Process Automation. Es el trabajo que tiene hoy.
+
+Orden completo, del mas reciente al mas antiguo:
+
+| Orden | Periodo | Empresa | Rol |
+|-------|---------|---------|-----|
+| 1 — **actual / el mas reciente / el ultimo** | Marzo 2026 - Presente | Fajas Forma Tu Cuerpo Shapewear | Software Development Lead - AI & Process Automation |
+| 2 | Julio 2025 - Marzo 2026 | Independiente (Self-Employed) | AI Automation Consultant |
+| 3 | Marzo 2024 - Julio 2025 | Nequi | Agile Leader |
+| 4 | Mayo 2022 - Julio 2023 | Imagemaker | Scrum Master |
+| 5 | Enero 2021 - Mayo 2022 | Sophos Solutions S.A.S. | Scrum Master / Agile Consultant |
+| 6 | Agosto 2018 - Diciembre 2020 | Softgic | Project Manager |
+| 7 | 2015 - Agosto 2018 | BVC - Bolsa de Valores de Colombia | Senior Software QA Analyst - Team Leader |
+| 8 | Junio 2015 - Diciembre 2016 | BVC - Bolsa de Valores de Colombia | Software Developer Scrum Team |
+| 9 | Febrero 2013 - Marzo 2015 | DIIT Consultores SAS | Development and Consulting Engineer |
+
+Notas de lectura (importante para responder bien):
+- La tabla esta ordenada de MAS RECIENTE a MAS ANTIGUO. La fila 1 es el trabajo actual; la fila 9 (DIIT Consultores) es el **mas antiguo de su carrera**, de 2013.
+- Cuando alguien pregunta por "la ultima empresa", "the last company", "su ultimo trabajo", "the most recent role" o "donde trabaja ahora", la respuesta correcta es SIEMPRE **Fajas Forma Tu Cuerpo Shapewear** (marzo 2026 - presente). Nunca DIIT ni BVC: esas son las mas antiguas.
+- Trece anos de trayectoria continua desde febrero de 2013, sin interrupciones.
+- El giro hacia ingenieria de IA empieza en julio de 2025 y es su linea de trabajo actual.
+
 ## Experiencia laboral
 
 ### Fajas Forma Tu Cuerpo Shapewear | Software Development Lead - AI & Process Automation | Marzo 2026 - Presente
