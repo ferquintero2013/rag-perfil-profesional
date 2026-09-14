@@ -126,9 +126,8 @@ Sistema end-to-end de validacion automatizada de expedientes de admision univers
 ## Top Skills (destacados en LinkedIn)
 - Claude Skills
 - Anthropic Claude
-- Vibe Coding
 - n8n
 - software development
 - Business analysis
 - Project management
-- Agile methodologiest
+- Agile methodologies

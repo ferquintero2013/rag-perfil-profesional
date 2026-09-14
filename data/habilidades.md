@@ -17,7 +17,6 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 | ManyChat | 3 | 1 | 2025 | Proyecto Lambda AI |
 | Meta APIs (WhatsApp/Messenger) | 3 | 1 | 2025 | Integracion con agentes de ventas |
 | GoHighLevel CRM | 3 | 1 | 2026 | Automatizaciones CRM, Onest Vision |
-| Vibe Coding | 4 | 1+ | Actual | Top skill LinkedIn |
 
 ## Desarrollo de Software
 
@@ -76,7 +75,6 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 | Habilidad | Fecha inicio | Recurso | Progreso |
 |-----------|-------------|---------|----------|
 | Claude Code / AI Agents | 2025 | Anthropic | Certificado |
-| Vibe Coding | 2025 | Practica | Activo |
 | Python | 2026-04 | Codecademy + practica | Iniciando |
 | Claude API / Anthropic SDK | 2026-04 | Documentacion oficial | Iniciando |
 | LangChain | 2026-05 | Tutorial oficial + proyecto FTC | Pendiente |
