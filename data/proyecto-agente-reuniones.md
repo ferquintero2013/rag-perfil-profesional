@@ -28,7 +28,7 @@ La conclusion de diseno: el resumen automatico sirve para ubicar una reunion, no
 
 **Tres, contraste contra el estado vigente.** Antes de escribir nada, el agente compara lo analizado con el estado actual del proyecto y busca cuatro cosas: contradicciones con lo documentado, compromisos nuevos, cambios de prioridad y personas involucradas que no estaban mapeadas. Tambien barre la lista de pendientes abiertos para ver si la reunion cierra o desbloquea alguno.
 
-**Cuatro, escritura a traves del MCP.** El agente escribe en el tablero invocando las herramientas que expone el servidor MCP. La escritura no es texto libre: cada pendiente queda con responsable, fecha concreta y una etiqueta de estado de un vocabulario cerrado — completado, en progreso, verificar estado, bloqueado por, cancelado, sin cerrar. Si algo no quedo cerrado en la reunion se marca *sin cerrar*; si no se sabe, *verificar estado*. Nunca se asume.
+**Cuatro, escritura a traves del MCP.** El agente escribe en el tablero — **Amapola Board**, una aplicacion web — invocando las herramientas que expone el servidor MCP. La escritura no es texto libre: cada pendiente queda con responsable, fecha concreta y una etiqueta de estado de un vocabulario cerrado — completado, en progreso, verificar estado, bloqueado por, cancelado, sin cerrar. Si algo no quedo cerrado en la reunion se marca *sin cerrar*; si no se sabe, *verificar estado*. Nunca se asume.
 
 ## Las decisiones de diseno
 
@@ -40,9 +40,19 @@ Es el mismo criterio que Ferney aplica en el resto de sus sistemas: **una automa
 
 **La regla de atribucion protege la credibilidad del sistema.** Asignar un compromiso a la persona equivocada destruye la confianza en todo el tablero de una sola vez. Por eso la atribucion se reconstruye por contenido, y ante la duda se guarda la cita textual en lugar de una interpretacion.
 
+## Como esta construido
+
+**El tablero (Amapola Board)** es una aplicacion web en **JavaScript sobre Next.js 15 con App Router**, desplegada como **funciones serverless en Vercel**, con **Supabase** como base de datos.
+
+**La capa MCP** usa **mcp-handler v1.1**, el adaptador de Vercel que envuelve el SDK oficial de MCP. Es decir, el servidor MCP corre como parte de la misma aplicacion serverless, no como un proceso aparte: el agente invoca sus herramientas por HTTP contra el mismo despliegue que sirve el tablero.
+
+**La obtencion de reuniones** se hace contra la API de Fathom, siempre sobre el transcript completo y en vivo, nunca sobre archivos exportados ni sobre el resumen automatico.
+
 ## Resultados
 
-El sistema sostuvo la direccion de un proyecto de ERP con operacion en tres paises durante siete meses, con multiples reuniones semanales y mas de veinte personas involucradas entre areas de negocio, desarrollo y direccion. El estado del proyecto — frentes de trabajo, pendientes, decisiones y responsables — se mantuvo actualizado despues de cada reunion sin transcripcion manual, y sirvio tanto para preparar las reuniones siguientes como para producir el informe final de traspaso al cierre del contrato.
+El sistema **proceso alrededor de 180 reuniones** y sostuvo la direccion de un proyecto de ERP con operacion en tres paises durante siete meses, con multiples reuniones semanales y mas de veinte personas involucradas entre areas de negocio, desarrollo y direccion.
+
+Las 180 reuniones quedaron **documentadas y validadas, con un historial coherente del proyecto**: no una pila de resumenes sueltos, sino un estado que se puede recorrer hacia atras y en el que cada compromiso tiene responsable, fecha y origen. El estado del proyecto — frentes de trabajo, pendientes, decisiones y responsables — se mantuvo actualizado despues de cada reunion sin transcripcion manual, y sirvio tanto para preparar las reuniones siguientes como para producir el informe final de traspaso al cierre del contrato.
 
 El efecto practico: la documentacion de gestion dejo de ser una tarea que se hace al final, cuando ya se olvido el detalle, y paso a ser una consecuencia automatica de que la reunion ocurriera.
 
@@ -54,4 +64,4 @@ La diferencia esta en el destinatario del error. En un portafolio, una afirmacio
 
 ## Tecnologias
 
-Servidor MCP propio, API de Fathom para obtencion de transcripts, agentes de IA con protocolo de analisis formalizado, tablero de gestion propio.
+JavaScript sobre Next.js 15 (App Router); despliegue serverless en Vercel; Supabase como base de datos; capa MCP con mcp-handler v1.1 sobre el SDK oficial de MCP; API de Fathom para obtencion de transcripts; agentes de IA con protocolo de analisis formalizado.
