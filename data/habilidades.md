@@ -27,12 +27,15 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 | Microsoft Dynamics AX | 3 | 2 | 2015 | DIIT Consultores - ERP |
 | Frontend (HTML/CSS/JS) | 2 | 1+ | Variable | Certificacion Platzi |
 
-## ERP y Plataformas de Negocio
+## ERP, CRM y Plataformas de Negocio
+
+Sistemas de negocio que Ferney ha integrado y automatizado: **ERP** (Odoo 19 Enterprise, Microsoft Dynamics AX), **CRM** (GoHighLevel) y canales de e-commerce (Shopify, Amazon, TikTok Shop, Mercado Libre). El trabajo tipico no es configurar la herramienta sino conectar el proceso entre ellas: que un pedido, un contacto o una referencia signifiquen lo mismo en todos los sistemas.
 
 | Habilidad | Nivel (1-5) | Anos experiencia | Ultimo uso | Notas |
 |-----------|-------------|-------------------|------------|-------|
 | Odoo ERP | 3 | 1 | Actual | Implementacion cross-country Xpress Shapewear |
 | Microsoft Dynamics AX | 3 | 2 | 2015 | Desarrollo y consultoria |
+| GoHighLevel CRM | 3 | 1 | 2026 | Automatizaciones de CRM para Onest Vision, cliente pagante |
 | Shopify | 3 | 1 | Actual | E-commerce Xpress Shapewear |
 | Amazon Seller | 3 | 1 | Actual | E-commerce Xpress Shapewear |
 | TikTok Shop | 3 | 1 | Actual | E-commerce Xpress Shapewear |
