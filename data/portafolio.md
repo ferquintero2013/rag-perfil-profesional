@@ -27,9 +27,9 @@
 - **Demo publico**: https://postulaciones-mvp.streamlit.app/
 - **Codigo fuente**: https://github.com/ferquintero2013/postulaciones-mvp-utel
 
-### 3. Implementacion ERP Cross-Country (Fajas Forma Tu Cuerpo)
+### 3. Implementacion ERP Cross-Country (Xpress Shapewear FL LLC)
 - **Descripcion**: Implementacion de Odoo ERP para operaciones en US, Colombia y Mexico con sincronizacion multi-plataforma (TikTok Shop, Amazon, Shopify)
-- **Rol**: Software Development Lead
+- **Rol**: Lider de desarrollo de software, IA y automatizacion, como independiente
 - **Tecnologias**: Odoo, integraciones e-commerce, herramientas IA
 - **Impacto/Resultados**: Eliminacion de inconsistencias de datos entre plataformas, frameworks de gobernanza de producto, documentacion acelerada 3x con IA
 - **Periodo**: Marzo 2026 - Presente

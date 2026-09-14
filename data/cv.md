@@ -18,45 +18,61 @@ Llega a la IA despues de trece anos recorriendo el ciclo completo de desarrollo 
 
 ## Trayectoria en orden cronologico (de lo mas reciente a lo mas antiguo)
 
-**Su empleo actual, el ultimo y mas reciente de su hoja de vida, es en Fajas Forma Tu Cuerpo Shapewear**, desde marzo de 2026, como Software Development Lead - AI & Process Automation. Es el trabajo que tiene hoy.
+**Lo mas reciente de su hoja de vida es su trabajo independiente, desde julio de 2025 hasta hoy.** Trabaja por cuenta propia como Ingeniero de IA y consultor en automatizacion. Dentro de ese periodo, su cliente actual es **Xpress Shapewear FL LLC**, donde lidera desarrollo de software, IA y automatizacion de procesos desde marzo de 2026.
 
 Orden completo, del mas reciente al mas antiguo:
 
 | Orden | Periodo | Empresa | Rol |
 |-------|---------|---------|-----|
-| 1 — **actual / el mas reciente / el ultimo** | Marzo 2026 - Presente | Fajas Forma Tu Cuerpo Shapewear | Software Development Lead - AI & Process Automation |
-| 2 | Julio 2025 - Marzo 2026 | Independiente (Self-Employed) | AI Automation Consultant |
-| 3 | Marzo 2024 - Julio 2025 | Nequi | Agile Leader |
-| 4 | Mayo 2022 - Julio 2023 | Imagemaker | Scrum Master |
-| 5 | Enero 2021 - Mayo 2022 | Sophos Solutions S.A.S. | Scrum Master / Agile Consultant |
-| 6 | Agosto 2018 - Diciembre 2020 | Softgic | Project Manager |
-| 7 | 2015 - Agosto 2018 | BVC - Bolsa de Valores de Colombia | Senior Software QA Analyst - Team Leader |
-| 8 | Junio 2015 - Diciembre 2016 | BVC - Bolsa de Valores de Colombia | Software Developer Scrum Team |
-| 9 | Febrero 2013 - Marzo 2015 | DIIT Consultores SAS | Development and Consulting Engineer |
+| 1 — **actual / el mas reciente / el ultimo** | Julio 2025 - Presente | Independiente (Self-Employed) | Ingeniero de IA y Consultor en Automatizacion |
+| 2 | Marzo 2024 - Julio 2025 | Nequi | Agile Leader |
+| 3 | Mayo 2022 - Julio 2023 | Imagemaker | Scrum Master |
+| 4 | Enero 2021 - Mayo 2022 | Sophos Solutions S.A.S. | Scrum Master / Agile Consultant |
+| 5 | Agosto 2018 - Diciembre 2020 | Softgic | Project Manager |
+| 6 | 2015 - Agosto 2018 | BVC - Bolsa de Valores de Colombia | Senior Software QA Analyst - Team Leader |
+| 7 | Junio 2015 - Diciembre 2016 | BVC - Bolsa de Valores de Colombia | Software Developer Scrum Team |
+| 8 | Febrero 2013 - Marzo 2015 | DIIT Consultores SAS | Development and Consulting Engineer |
+
+Dentro del periodo independiente (julio 2025 - presente), sus clientes y proyectos han sido:
+
+| Periodo | Cliente / proyecto | Que hizo |
+|---------|--------------------|----------|
+| Marzo 2026 - Presente | **Xpress Shapewear FL LLC** (cliente actual) | Lidera desarrollo de software, IA y automatizacion de procesos: ERP Odoo cross-country y sincronizacion e-commerce |
+| Enero - Marzo 2026 | **Onest Vision** (cliente pagante) | Automatizaciones de CRM en GoHighLevel |
+| Agosto - Diciembre 2025 | **Lambda AI** (proyecto propio) | Prototipo de agentes de soporte de ventas |
+| 2025 | **Hackathon EmprendIA LATAM** | 1er lugar en Best AI Automation |
 
 Notas de lectura (importante para responder bien):
-- La tabla esta ordenada de MAS RECIENTE a MAS ANTIGUO. La fila 1 es el trabajo actual; la fila 9 (DIIT Consultores) es el **mas antiguo de su carrera**, de 2013.
-- Cuando alguien pregunta por "la ultima empresa", "the last company", "su ultimo trabajo", "the most recent role" o "donde trabaja ahora", la respuesta correcta es SIEMPRE **Fajas Forma Tu Cuerpo Shapewear** (marzo 2026 - presente). Nunca DIIT ni BVC: esas son las mas antiguas.
+- La tabla esta ordenada de MAS RECIENTE a MAS ANTIGUO. La fila 1 es lo que hace hoy; la fila 8 (DIIT Consultores) es lo **mas antiguo de su carrera**, de 2013.
+- Cuando alguien pregunta por "la ultima empresa", "the last company", "su ultimo trabajo", "the most recent role" o "donde trabaja ahora": desde julio de 2025 **trabaja de forma independiente**, y su cliente actual es **Xpress Shapewear FL LLC**. Nunca respondas DIIT ni BVC: esas son las mas antiguas.
+- Nequi (hasta julio de 2025) fue su **ultimo empleo en nomina**. Todo lo posterior es trabajo por cuenta propia.
 - Trece anos de trayectoria continua desde febrero de 2013, sin interrupciones.
 - El giro hacia ingenieria de IA empieza en julio de 2025 y es su linea de trabajo actual.
 
 ## Experiencia laboral
 
-### Fajas Forma Tu Cuerpo Shapewear | Software Development Lead - AI & Process Automation | Marzo 2026 - Presente
-- **Tecnologias**: Odoo ERP, TikTok Shop, Amazon, Shopify, herramientas IA
-- **Logros clave**:
-  - Liderando implementacion de ERP cross-country (US, Colombia, Mexico)
-  - Diseno de frameworks de gobernanza de producto para eliminar inconsistencias de datos
-  - Aplicacion de IA para acelerar toma de decisiones: analisis de reuniones, extraccion de requerimientos, identificacion de riesgos a 3x velocidad
-- **Responsabilidades**: Alineacion de stakeholders (Operaciones, Contabilidad, Tecnologia), orquestacion de equipos de desarrollo, control de inventario, facturacion, sincronizacion multi-plataforma
+### Independiente (Self-Employed) | Ingeniero de IA y Consultor en Automatizacion | Julio 2025 - Presente
+Todo su trabajo desde julio de 2025 es por cuenta propia: proyectos propios, un premio de hackathon y clientes bajo contrato. Es su situacion actual.
 
-### Independiente (Self-Employed) | AI Automation Consultant | Julio 2025 - Marzo 2026 (9 meses)
-- **Tecnologias**: n8n, Zapier, Meta APIs, ManyChat, GoHighLevel CRM
-- **Logros clave**:
-  - **Onest Vision (cliente pagante, Ene-Mar 2026)**: Automatizaciones CRM en GoHighLevel para gestion de contactos, atribucion UTM y reporting. Contrato como contractor.
-  - **Lambda AI (proyecto propio, Ago-Dic 2025)**: Prototipo de agentes de soporte de ventas con Meta APIs y ManyChat, automatizando captura, calificacion y gestion de leads. Iniciativa propia para lanzar negocio de chatbots; arquitectura completa construida, no llego a clientes pagantes. El mismo patron tecnico gano 1er lugar en el hackathon EmprendIA LATAM.
-  - **Hackathon EmprendIA LATAM (2025)**: 1er lugar en la categoria Best AI Automation con solucion construida en n8n.
-- **Responsabilidades**: Consultoria independiente en automatizaciones IA y sistemas multi-agente, optimizacion de workflows, integracion de asistentes IA
+- **Tecnologias**: Python, OpenAI (GPT-4o, GPT-4o Vision, embeddings), n8n, Zapier, Meta APIs, ManyChat, GoHighLevel CRM, Odoo ERP, Shopify, Amazon, TikTok Shop
+
+- **Xpress Shapewear FL LLC — cliente actual (Marzo 2026 - Presente)**
+  - Lidera desarrollo de software, IA y automatizacion de procesos.
+  - Implementacion de ERP Odoo cross-country (Estados Unidos, Colombia, Mexico) con Shopify, Amazon y TikTok Shop sincronizados contra el.
+  - Frameworks de gobernanza de producto para eliminar inconsistencias de datos entre plataformas.
+  - Aplicacion de IA al ciclo de decision: analisis de reuniones, extraccion de requerimientos e identificacion de riesgos.
+  - Alineacion de stakeholders (Operaciones, Contabilidad, Tecnologia), orquestacion de equipos de desarrollo, control de inventario, facturacion y sincronizacion multi-plataforma.
+
+- **Onest Vision — cliente pagante (Enero - Marzo 2026)**
+  - Automatizaciones de CRM en GoHighLevel: gestion de contactos y oportunidades, atribucion UTM y reporting. Contrato como contractor.
+
+- **Lambda AI — proyecto propio (Agosto - Diciembre 2025)**
+  - Prototipo de agentes de soporte de ventas con Meta APIs y ManyChat, automatizando captura, calificacion y gestion de leads. Iniciativa propia para lanzar un negocio de chatbots; arquitectura completa construida, no llego a clientes pagantes. El mismo patron tecnico gano 1er lugar en el hackathon EmprendIA LATAM.
+
+- **Hackathon EmprendIA LATAM (2025)**
+  - 1er lugar en la categoria Best AI Automation con una solucion construida en n8n.
+
+- **Proyectos publicos propios**: MVP de validacion documental con IA y chatbot RAG sobre su CV (ver seccion de proyectos tecnicos).
 
 ### Nequi | Agile Leader | Marzo 2024 - Julio 2025 (1 ano 5 meses)
 - **Tecnologias**: Herramientas agiles, metricas de productividad

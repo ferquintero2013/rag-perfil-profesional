@@ -31,11 +31,11 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 
 | Habilidad | Nivel (1-5) | Anos experiencia | Ultimo uso | Notas |
 |-----------|-------------|-------------------|------------|-------|
-| Odoo ERP | 3 | 1 | Actual | Implementacion cross-country Fajas FTC |
+| Odoo ERP | 3 | 1 | Actual | Implementacion cross-country Xpress Shapewear |
 | Microsoft Dynamics AX | 3 | 2 | 2015 | Desarrollo y consultoria |
-| Shopify | 3 | 1 | Actual | E-commerce Fajas FTC |
-| Amazon Seller | 3 | 1 | Actual | E-commerce Fajas FTC |
-| TikTok Shop | 3 | 1 | Actual | E-commerce Fajas FTC |
+| Shopify | 3 | 1 | Actual | E-commerce Xpress Shapewear |
+| Amazon Seller | 3 | 1 | Actual | E-commerce Xpress Shapewear |
+| TikTok Shop | 3 | 1 | Actual | E-commerce Xpress Shapewear |
 
 ## Gestion de Proyectos y Agilidad
 
@@ -51,11 +51,11 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 
 | Habilidad | Nivel (1-5) | Anos experiencia | Ultimo uso | Notas |
 |-----------|-------------|-------------------|------------|-------|
-| Business Analysis | 4 | 5+ | Actual | DIIT, BVC, Fajas FTC |
+| Business Analysis | 4 | 5+ | Actual | DIIT, BVC, Xpress Shapewear |
 | Documentacion funcional/tecnica | 4 | 5+ | Actual | Toda la carrera |
 | Process Optimization | 4 | 3+ | Actual | Core de su rol actual |
 | Elaboracion de propuestas | 4 | 3+ | Actual | Imagemaker, consultoria independiente |
-| E-commerce operations | 3 | 1 | Actual | Fajas FTC multi-plataforma |
+| E-commerce operations | 3 | 1 | Actual | Xpress Shapewear multi-plataforma |
 
 ## Habilidades blandas
 - Liderazgo de equipos multiculturales (Imagemaker)
@@ -77,7 +77,7 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 | Claude Code / AI Agents | 2025 | Anthropic | Certificado |
 | Python | 2026-04 | Codecademy + practica | Iniciando |
 | Claude API / Anthropic SDK | 2026-04 | Documentacion oficial | Iniciando |
-| LangChain | 2026-05 | Tutorial oficial + proyecto FTC | Pendiente |
+| LangChain | 2026-05 | Tutorial oficial + proyecto Xpress Shapewear | Pendiente |
 | RAG en no-code (n8n + Vector Store) | 2025 | Proyecto propio | **Completado**: flujo RAG funcional en n8n con Vector Store node (Pinecone). Sin codigo propio — orquestacion no-code. |
 | RAG con codigo (Python + Vector DB) | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: sistema completo en Python — chunking estructural, embeddings, ChromaDB, retrieval hibrido (BM25 + vectorial con RRF), query rewriting y grounding. Desplegado: https://chat-perfil-ferney.streamlit.app/ |
 | Vector databases | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: ChromaDB via codigo (PersistentClient, collections, metadata, query por embeddings, persistencia). Pinecone sigue siendo solo via n8n, no via codigo. |

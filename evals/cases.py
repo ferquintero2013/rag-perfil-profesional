@@ -73,10 +73,19 @@ CASOS = [
     {
         "categoria": "declinar",
         "pregunta": "Does he know Kubernetes?",
-        "debe_citar": False,
-        "mood": ["declined"],
+        # Declinar y ofrecer lo adyacente (AWS) es lo que pide el prompt, y
+        # si lo ofrece TIENE que citarlo. Exigir cero citas castigaba la
+        # respuesta correcta: lo que importa es que no se invente Kubernetes.
+        "debe_citar": None,
+        "mood": ["declined", "answering"],
+        # Sin no_contiene: cualquier frase que delate una afirmacion falsa
+        # aparece tambien dentro de su negacion ("no documented experience
+        # with Kubernetes"). Distinguir afirmacion de negacion es trabajo
+        # del juez, no de una busqueda de subcadenas.
         "idioma": "en",
-        "criterio": "Debe decir claramente que no hay informacion sobre Kubernetes, sin inventar nada.",
+        "criterio": ("Debe decir claramente que no hay informacion sobre Kubernetes, sin "
+                     "inventar nada. Puede ofrecer algo cercano y documentado (AWS) "
+                     "siempre que lo cite."),
     },
     {
         "categoria": "declinar",
@@ -145,12 +154,13 @@ CASOS = [
     {
         "categoria": "idioma",
         "pregunta": "Does he have experience with Terraform?",
-        "debe_citar": False,
-        "mood": ["declined"],
+        "debe_citar": None,
+        "mood": ["declined", "answering"],
         "idioma": "en",
         "criterio": (
             "Declina, pero en INGLES. Es el caso que fallaba antes: el contexto "
-            "recuperado esta en espanol y arrastraba el idioma de la respuesta."
+            "recuperado esta en espanol y arrastraba el idioma de la respuesta. "
+            "Puede ofrecer algo cercano y documentado si lo cita."
         ),
     },
 

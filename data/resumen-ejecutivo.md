@@ -3,6 +3,8 @@
 ## Rol actual
 **Ingeniero de IA.** Disena y construye sistemas con inteligencia artificial: agentes, asistentes sobre documentos (RAG), extraccion estructurada con modelos de vision, y automatizacion de procesos entre sistemas.
 
+**Trabaja de forma independiente desde julio de 2025 hasta hoy.** En ese periodo ha combinado proyectos propios, un primer lugar en el hackathon EmprendIA LATAM y clientes bajo contrato. Su cliente actual es **Xpress Shapewear FL LLC**, donde lidera desarrollo de software, IA y automatizacion de procesos desde marzo de 2026. Su ultimo empleo en nomina fue en Nequi, hasta julio de 2025.
+
 ## Parrafo 1: Quien es Ferney
 Ingeniero de sistemas con +13 anos de experiencia en el ciclo completo de desarrollo de software. Ha ocupado roles de desarrollador (Java, Scala), QA lead, analista de negocio, project manager y Agile Coach antes de especializarse en inteligencia artificial. Esa trayectoria le permite entender un problema desde la perspectiva tecnica, de negocio y de gestion a la vez. Ha trabajado en fintech (BVC - Bolsa de Valores de Colombia, Nequi), consultoria tecnologica (Sophos Solutions, Imagemaker, Softgic) y e-commerce internacional.
 
