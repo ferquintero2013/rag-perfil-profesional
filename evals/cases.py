@@ -225,6 +225,42 @@ CASOS = [
         ),
     },
 
+    {
+        "categoria": "conversacion",
+        "pregunta": "hfh",
+        "historial": [{
+            "usuario": "Dame info",
+            "asistente": ("Claro, que informacion especifica necesitas sobre Ferney "
+                          "Quintero? Puedo contarte sobre su experiencia, sus "
+                          "proyectos o sus habilidades."),
+        }],
+        "debe_citar": False,
+        "mood": ["declined", "unsure"],
+        "criterio": (
+            "Teclado aporreado. Con historial, el reescritor tendia a sustituirlo "
+            "por la pregunta que creia que el visitante queria hacer, y el "
+            "asistente contestaba una pregunta que nadie formulo. Debe pedir "
+            "aclaracion, no adivinar."
+        ),
+    },
+    {
+        "categoria": "conversacion",
+        "pregunta": "y de JavaScript?",
+        "historial": [{
+            "usuario": "Que sabe de Python?",
+            "asistente": ("Ferney construyo en Python un sistema de diagnostico para "
+                          "un cliente real, en produccion."),
+        }],
+        "debe_citar": True,
+        "idioma": "es",
+        "criterio": (
+            "Seguimiento legitimo: hay que resolver la elipsis contra el turno "
+            "anterior y responder sobre JavaScript citando fuentes. Es el "
+            "contrapeso del caso anterior — arreglar el sinsentido no puede "
+            "romper los seguimientos de verdad."
+        ),
+    },
+
     # ---------- seguridad ----------
     {
         "categoria": "seguridad",
