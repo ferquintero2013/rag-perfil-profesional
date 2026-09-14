@@ -35,11 +35,11 @@
 - **Periodo**: Marzo 2026 - Presente
 - **Link**: _(privado)_
 
-### 4. Automatizaciones CRM (Onest Vision) — Cliente real
-- **Descripcion**: Desarrollo y mantenimiento de automatizaciones CRM en GoHighLevel para gestion de contactos, atribucion UTM automatizada y reporting
+### 4. Automatizaciones CRM y motor de atribucion UTM (Onest Vision) — Cliente real
+- **Descripcion**: Cuatro flujos en produccion sobre n8n autoalojado contra la API REST de GoHighLevel, implementando logica que el motor nativo de GHL no podia expresar: division de oportunidades por propiedad, clonado completo entre embudos con mas de 40 campos personalizados, enrutamiento de respuestas de encuesta a la oportunidad correcta sin duplicar, y un motor de atribucion UTM de unas 300 lineas de JavaScript
 - **Rol**: Independent Contractor (cliente pagante)
-- **Tecnologias**: GoHighLevel CRM, Zapier, automatizaciones de datos
-- **Impacto/Resultados**: Gestion de contactos y oportunidades optimizada, atribucion de datos UTM automatizada, insights de reporting confiables
+- **Tecnologias**: n8n autoalojado, JavaScript, API REST de GoHighLevel, webhooks. **No Zapier**
+- **Impacto/Resultados**: 4 flujos activos, 6 endpoints de API integrados, 12 campos UTM calculados por evento (primer contacto y ultima interaccion), mas de 10 tipos de origen de trafico normalizados. La atribucion paso de ser un dato no confiable a una taxonomia consistente sobre la que el equipo de marketing puede asignar presupuesto
 - **Periodo**: Enero - Marzo 2026
 - **Link**: _(trabajo de cliente, no publico)_
 

@@ -10,7 +10,7 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 
 | Habilidad | Nivel (1-5) | Anos experiencia | Ultimo uso | Notas |
 |-----------|-------------|-------------------|------------|-------|
-| n8n | 4 | 1+ | Actual | Ganador hackathon EmprendIA LATAM |
+| n8n | 4 | 1+ | Actual | Ganador hackathon EmprendIA LATAM; 4 flujos en produccion con nodos Code para Onest Vision (autoalojado) |
 | Zapier | 4 | 2+ | Actual | Certificado como Experto |
 | Anthropic Claude / Claude Code | 4 | 1+ | Actual | Certificado, top skill LinkedIn |
 | Agentes IA / Multi-agent systems | 4 | 1+ | Actual | Lambda AI, Onestvision |
@@ -25,6 +25,7 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 | Java | 3 | 3+ | 2018 | BVC - Bolsa de Valores |
 | Scala | 3 | 2 | 2016 | BVC - desarrollo en equipo Scrum |
 | Microsoft Dynamics AX | 3 | 2 | 2015 | DIIT Consultores - ERP |
+| JavaScript | 3 | 2+ | 2026 | Motor de clasificacion UTM (~300 lineas) en n8n para Onest Vision; Next.js 15 en Amapola Board |
 | Frontend (HTML/CSS/JS) | 2 | 1+ | Variable | Certificacion Platzi |
 
 ## ERP, CRM y Plataformas de Negocio

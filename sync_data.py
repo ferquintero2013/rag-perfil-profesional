@@ -14,6 +14,7 @@ ARCHIVOS_PUBLICOS = [
     "resumen-ejecutivo.md",
     "proyecto-erp-odoo.md",
     "proyecto-agente-reuniones.md",
+    "proyecto-onest-vision-ghl.md",
 ]
 
 
