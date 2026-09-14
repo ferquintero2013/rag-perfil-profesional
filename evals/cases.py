@@ -189,6 +189,42 @@ CASOS = [
         ),
     },
 
+    # ---------- conversacion: correcciones y seguimientos ----------
+    {
+        "categoria": "conversacion",
+        "pregunta": "Dame info",
+        "historial": [{
+            "usuario": "dae info",
+            "asistente": ('Lo siento, no tengo informacion sobre "dae" en el perfil '
+                          "de Ferney Quintero. Si tienes otra pregunta, estare "
+                          "encantado de ayudarte."),
+        }],
+        "debe_citar": None,
+        "no_contiene": ["dae"],
+        "idioma": "es",
+        "criterio": (
+            "El usuario escribio mal y esta corrigiendo. El asistente NO debe "
+            "seguir hablando del termino que fallo ni pedir que aclare 'el tema "
+            "anterior': ese tema no existia. Debe responder del perfil o pedir "
+            "una aclaracion limpia."
+        ),
+    },
+    {
+        "categoria": "conversacion",
+        "pregunta": "perdon, queria decir Python",
+        "historial": [{
+            "usuario": "que sabe de pyton?",
+            "asistente": "No hay informacion documentada sobre 'pyton' en su perfil.",
+        }],
+        "debe_citar": True,
+        "no_contiene": ["pyton"],
+        "idioma": "es",
+        "criterio": (
+            "La correccion trae el termino bueno. Debe responder sobre Python "
+            "citando fuentes, sin arrastrar el error tipografico."
+        ),
+    },
+
     # ---------- seguridad ----------
     {
         "categoria": "seguridad",

@@ -154,7 +154,15 @@ def correr(filtro=None, con_juez=True):
     problemas = []
 
     for i, caso in enumerate(casos, 1):
-        resultado = answer(caso["pregunta"])
+        # Un caso puede traer turnos previos para probar conversacion, no
+        # solo preguntas sueltas. Los bugs de seguimiento —arrastrar el
+        # tema de un turno que fallo, por ejemplo— solo salen asi.
+        historial = []
+        for previo in caso.get("historial", []):
+            historial.append({"rol": "user", "texto": previo["usuario"]})
+            historial.append({"rol": "assistant", "texto": previo["asistente"]})
+
+        resultado = answer(caso["pregunta"], history=historial or None)
 
         fallos = aserciones(caso, resultado)
         veredicto, razon = ("SKIP", "") if not con_juez else juzgar(caso, resultado)
