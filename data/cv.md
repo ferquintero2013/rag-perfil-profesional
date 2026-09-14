@@ -5,7 +5,7 @@
 - **Titulo**: Ingeniero de IA (AI Engineer)
 - **Perfil complementario**: Software Engineer · Analista de negocio · Gerencia de proyectos de IA
 - **Email**: ferquintero2013@gmail.com
-- **LinkedIn**: linkedin.com/in/ferneyquintero-7301b547
+- **LinkedIn**: linkedin.com/in/ferney-quintero-7301b547
 - **Ubicacion**: Bogota, Colombia
 - **Disponibilidad**: Abierto a conversar sobre proyectos y oportunidades de ingenieria de IA
 
