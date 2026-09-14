@@ -12,6 +12,8 @@ ARCHIVOS_PUBLICOS = [
     "portafolio.md",
     "habilidades.md",
     "resumen-ejecutivo.md",
+    "proyecto-erp-odoo.md",
+    "proyecto-agente-reuniones.md",
 ]
 
 
