@@ -83,8 +83,8 @@ Sistemas de negocio que Ferney ha integrado y automatizado: **ERP** (Odoo 19 Ent
 | Claude API / Anthropic SDK | 2026-04 | Documentacion oficial | Iniciando |
 | LangChain | 2026-05 | Tutorial oficial + proyecto Xpress Shapewear | Pendiente |
 | RAG en no-code (n8n + Vector Store) | 2025 | Proyecto propio | **Completado**: flujo RAG funcional en n8n con Vector Store node (Pinecone). Sin codigo propio — orquestacion no-code. |
-| RAG con codigo (Python + Vector DB) | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: sistema completo en Python — chunking estructural, embeddings, ChromaDB, retrieval hibrido (BM25 + vectorial con RRF), query rewriting y grounding. Desplegado: https://chat-perfil-ferney.streamlit.app/ |
-| Vector databases | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: ChromaDB via codigo (PersistentClient, collections, metadata, query por embeddings, persistencia). Pinecone sigue siendo solo via n8n, no via codigo. |
+| RAG con codigo (Python + Vector DB) | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: sistema completo en Python — chunking estructural, embeddings, retrieval hibrido (BM25 + vectorial con RRF), query rewriting, grounding con citacion obligatoria y evals automatizados. Desplegado: https://chat-perfil-ferney.streamlit.app/ |
+| Vector databases | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: primero con ChromaDB via codigo (PersistentClient, collections, metadata, query por embeddings) y despues **retirado a proposito**: con un corpus de 73 fragmentos que ocupa medio megabyte, una base vectorial anade una dependencia y un proceso que no hacen falta. El indice final son vectores normalizados en un array de numpy, donde la similitud coseno es una multiplicacion de matrices. Conoce la herramienta y sabe cuando no usarla. Pinecone sigue siendo solo via n8n, no via codigo. |
 
 ## Plan de aprendizaje completo
 Ver `coaching/plan-aprendizaje-ia.md` para roadmap detallado de 12 semanas.

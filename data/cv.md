@@ -119,7 +119,7 @@ Todo su trabajo desde julio de 2025 es por cuenta propia: proyectos propios, un 
 
 ### Chatbot RAG sobre CV y portafolio | Septiembre 2026
 Sistema RAG que responde preguntas sobre mi trayectoria profesional usando unicamente mi CV y portafolio como fuente, con citacion obligatoria de la fuente de cada afirmacion.
-- **Stack**: Python, Streamlit, ChromaDB, BM25 (rank-bm25), OpenAI (text-embedding-3-small + GPT-4o). Desarrollado con Claude Code.
+- **Stack**: Python, BM25 (rank-bm25), OpenAI (text-embedding-3-small + GPT-4o + GPT-4o-mini), API en funciones serverless de Vercel. Sin base de datos vectorial: el indice son vectores normalizados en un array de numpy, asi que la similitud coseno se resuelve en una multiplicacion de matrices. Desarrollado con Claude Code.
 - **Decision tecnica clave**: busqueda hibrida (BM25 + embeddings fusionados con Reciprocal Rank Fusion). La busqueda puramente vectorial fallaba en preguntas sobre entidades nombradas ("¿sabe X?") por dilucion semantica en chunks tematicamente mixtos. HyDE se probo y se descarto con datos: mejoraba las distancias mientras empeoraba la relevancia.
 - **Otras piezas**: query rewriting previo al retrieval para soportar preguntas de seguimiento, grounding estricto anti-alucinacion, y curacion del corpus por allowlist explicita.
 - **Demo publico**: https://chat-perfil-ferney.streamlit.app/

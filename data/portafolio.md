@@ -5,7 +5,7 @@
 ### 1. Chatbot RAG sobre CV y portafolio — PUBLICO
 - **Descripcion**: Sistema RAG que responde preguntas sobre mi trayectoria profesional usando unicamente mi CV y portafolio como fuente. Cada afirmacion cita el archivo y la seccion de donde salio, de modo que la respuesta es verificable y no una opinion del modelo.
 - **Rol**: Arquitecto y desarrollador unico (100% del codigo, diseno y deploy)
-- **Tecnologias**: Python, Streamlit, ChromaDB, rank-bm25, OpenAI (text-embedding-3-small + GPT-4o + GPT-4o-mini). Construido con Claude Code.
+- **Tecnologias**: Python, rank-bm25, OpenAI (text-embedding-3-small + GPT-4o + GPT-4o-mini), funciones serverless en Vercel. Construido con Claude Code.
 - **Decisiones tecnicas destacadas**:
   - **Busqueda hibrida**: BM25 + embeddings, fusionados con Reciprocal Rank Fusion. La busqueda puramente vectorial fallaba en preguntas sobre entidades nombradas por dilucion semantica en chunks tematicamente mixtos.
   - **HyDE probado y descartado con datos**: mejoraba las distancias de similitud (1.13 -> 0.77) mientras empeoraba la relevancia real, porque la metrica media parecido con la respuesta hipotetica y no con la pregunta.
@@ -19,7 +19,7 @@
 ### 2. MVP de Validacion Inteligente de Documentos con IA (UTEL) — PUBLICO
 - **Descripcion**: Sistema de hiperautomatizacion que valida expedientes de admision universitaria. Extrae datos de documentos con GPT-4o Vision, aplica reglas de negocio auditables, hace cross-check de identidad entre documentos para detectar posibles suplantaciones, y genera notificaciones personalizadas al aspirante con IA.
 - **Rol**: Arquitecto y desarrollador unico (100% del codigo, diseno y deploy)
-- **Tecnologias**: Python 3.14, Streamlit, OpenAI GPT-4o Vision + GPT-4o-mini, GitHub API, ChromaDB-free (reglas deterministas), deploy en Streamlit Community Cloud. Construido usando Claude Code como companero de desarrollo.
+- **Tecnologias**: Python 3.14, Streamlit, OpenAI GPT-4o Vision + GPT-4o-mini, GitHub API, reglas deterministas de negocio, deploy en Streamlit Community Cloud. Construido usando Claude Code como companero de desarrollo.
 - **Impacto/Resultados**: Reduccion de ~14 minutos a ~5 segundos por documento (99% menos tiempo). Cross-check de identidad = capacidad nueva que no existia en el proceso manual. Notificacion al aspirante 100% automatizada. Trazabilidad completa para auditoria.
 - **Arquitectura**: 6 modulos Python con separacion de responsabilidades — ingesta, extraccion con Vision AI, validacion por reglas de negocio, analisis de expediente con cross-check, generacion de notificacion, UI.
 - **Decisiones de diseno destacadas**: hibrido IA + reglas deterministas (la IA extrae, las reglas deciden), anti-alucinacion via auto-declaracion de confianza del modelo, jerarquia de decision por severidad, modelos distintos por caso de uso (GPT-4o para extraccion critica, GPT-4o-mini 10x mas barato para redaccion).
