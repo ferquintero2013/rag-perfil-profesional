@@ -141,6 +141,7 @@ Sistema end-to-end de validacion automatizada de expedientes de admision univers
 ## Certificaciones y formacion
 
 ### Inteligencia artificial y datos
+- **Bootcamp 2027: Comprender y Crear Agentes IA Profesionales** — Udemy (Julio Colomer), septiembre de 2026, 50.5 horas. Enfocado en **LangGraph**: agentes basicos, intermedios y avanzados hasta subgrafos; sistemas multi-agente; agentes con memoria de largo plazo; herramientas a medida y gestion de correo; human-in-the-loop; criterios para elegir framework; y el proceso completo de construir un agente desde la entrevista inicial con el cliente hasta la aplicacion final. **No cubre CrewAI**: ese modulo se omitio deliberadamente para concentrar el tiempo en LangGraph.
 - **1er Lugar — Best AI Automation**, hackathon n8n EmprendIA LATAM (2025)
 - **Claude Code: Software Engineering with Generative AI Agents** — Vanderbilt University
 - **n8n: Agentes y automatizaciones de IA** — Udemy
