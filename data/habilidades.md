@@ -15,7 +15,7 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 | Anthropic Claude / Claude Code | 4 | 1+ | Actual | Certificado, top skill LinkedIn |
 | Agentes IA / Multi-agent systems | 4 | 1+ | Actual | Lambda AI, Onestvision |
 | LangGraph | 3 | <1 | Actual | Bootcamp de 50.5 h (Udemy, sep 2026) mas proyecto propio `langgraph-doc-assistant`: estado tipado, aristas condicionales, ciclos, subgrafos, checkpointers y reducers |
-| Sistemas RAG (diseno y construccion) | 4 | <1 | Actual | Dos sistemas completos en produccion: `rag-perfil-profesional` y `langgraph-doc-assistant`. Busqueda hibrida BM25 + embeddings con RRF, chunking contextual, grounding con citacion y evals automatizados. **El nivel 4 es de arquitectura RAG, no de Python como lenguaje**: ver Python en la tabla de aprendizaje |
+| Sistemas RAG (diseno y construccion) | 4 | <1 | Actual | Dos sistemas completos en produccion: `rag-perfil-profesional` y `langgraph-doc-assistant`. Busqueda hibrida BM25 + embeddings con RRF, chunking contextual, grounding con citacion y evals automatizados. El nivel corresponde a la arquitectura RAG; Python como lenguaje va en su propia fila |
 | ManyChat | 3 | 1 | 2025 | Proyecto Lambda AI |
 | Meta APIs (WhatsApp/Messenger) | 3 | 1 | 2025 | Integracion con agentes de ventas |
 | GoHighLevel CRM | 3 | 1 | 2026 | Automatizaciones CRM, Onest Vision |
@@ -24,6 +24,7 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 
 | Habilidad | Nivel (1-5) | Anos experiencia | Ultimo uso | Notas |
 |-----------|-------------|-------------------|------------|-------|
+| Python | 4 | 1+ | Actual | Lenguaje principal de su trabajo actual de IA. Tres sistemas completos construidos y desplegados: `rag-perfil-profesional`, `langgraph-doc-assistant` y el MVP de validacion documental de UTEL, mas el sistema de diagnostico que corrio en produccion para un cliente real |
 | Java | 3 | 3+ | 2018 | BVC - Bolsa de Valores |
 | Scala | 3 | 2 | 2016 | BVC - desarrollo en equipo Scrum |
 | Microsoft Dynamics AX | 3 | 2 | 2015 | DIIT Consultores - ERP |
@@ -81,7 +82,6 @@ Sistemas de negocio que Ferney ha integrado y automatizado: **ERP** (Odoo 19 Ent
 | Habilidad | Fecha inicio | Recurso | Progreso |
 |-----------|-------------|---------|----------|
 | Claude Code / AI Agents | 2025 | Anthropic | Certificado |
-| Python | 2026-04 | Codecademy + practica en proyectos propios | **En curso.** La formacion formal empezo en abril de 2026 y es reciente: Python no es un lenguaje que haya usado durante anos. Dicho eso, en la practica ya construyo con el dos sistemas completos y desplegados (`rag-perfil-profesional` y `langgraph-doc-assistant`) y el MVP de validacion documental. Si alguien pregunta por su experiencia con Python, ambas cosas son ciertas y hay que decir las dos: sabe construir sistemas reales en Python, y lleva poco tiempo haciendolo. |
 | Claude API / Anthropic SDK | 2026-04 | Documentacion oficial | Iniciando |
 | LangChain | 2026-05 | Tutorial oficial + proyecto Xpress Shapewear | Pendiente. Nota: LangGraph si esta construido y desplegado; son librerias distintas de la misma familia y no se deben confundir. |
 | LangGraph | 2026-09 | Bootcamp Udemy (50.5 h) + proyecto propio `langgraph-doc-assistant` | **COMPLETADO 2026-09-24**: grafo con ciclo de autocorreccion en produccion — nodos de evaluacion y verificacion, ciclos con tope de intentos, memoria del lado del servidor via checkpointer por `thread_id`, y reducers para acumular historial. Codigo abierto: https://github.com/ferquintero2013/langgraph-doc-assistant |

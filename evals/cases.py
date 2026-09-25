@@ -25,10 +25,14 @@ CASOS = [
         "contiene": ["python"],
         "no_contiene": ["experto en python", "domina python", "senior python"],
         "idioma": "es",
+        # El criterio cambio el 2026-09-25 por decision de Ferney: el perfil
+        # ya no publica cuando empezo a aprender Python. Lo que se evalua es
+        # que la respuesta se apoye en sistemas construidos, no en anos de
+        # antiguedad ni en titulos de experto que nadie ha dado.
         "criterio": (
-            "Debe mencionar proyectos reales construidos en Python Y dejar claro "
-            "que su formacion formal en Python es reciente. No puede presentarlo "
-            "como dominio experto ni como muchos anos de experiencia."
+            "Debe responder que si, apoyandose en proyectos reales construidos "
+            "en Python. No puede presentarlo como dominio experto, ni atribuirle "
+            "muchos anos de experiencia, ni inventar certificaciones de Python."
         ),
     },
     {
@@ -140,7 +144,16 @@ CASOS = [
         "debe_citar": True,
         "mood": ["confident", "answering"],
         "idioma": "en",
-        "criterio": "Debe mencionar uno de los proyectos de 2026 (el MVP de validacion de documentos o el propio asistente RAG).",
+        # Actualizado 2026-09-25: el asistente con LangGraph es posterior a
+        # los dos que listaba este criterio. Se acepta tambien el ERP de
+        # Xpress Shapewear: sigue activo desde marzo de 2026, asi que
+        # nombrarlo no es un error, solo una lectura distinta de "reciente".
+        "criterio": (
+            "Debe mencionar un proyecto tecnico de 2026: el asistente de "
+            "documentacion con LangGraph, el MVP de validacion de documentos, "
+            "el propio asistente RAG del portafolio, o la implementacion de "
+            "Odoo para Xpress Shapewear."
+        ),
     },
 
     # ---------- idioma ----------

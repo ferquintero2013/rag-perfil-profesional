@@ -117,6 +117,14 @@ Todo su trabajo desde julio de 2025 es por cuenta propia: proyectos propios, un 
 
 ## Proyectos tecnicos publicos
 
+### Asistente de documentacion tecnica con LangGraph | Septiembre 2026
+**Es el proyecto tecnico mas reciente de Ferney.** Asistente que responde preguntas sobre la documentacion de una API y muestra el razonamiento que siguio para cada respuesta. La orquestacion es un grafo de LangGraph con decisiones y ciclos, no un RAG lineal: evalua si lo recuperado responde de verdad, reformula la busqueda y reintenta si no, y verifica la respuesta contra las fuentes antes de entregarla. Si no queda respaldada, la descarta.
+- **Stack**: Python, LangGraph (estado tipado, aristas condicionales, ciclos, checkpointers, reducers), OpenAI (GPT-4o + GPT-4o-mini + text-embedding-3-small), rank-bm25, numpy, BeautifulSoup, Streamlit. Desarrollado con Claude Code.
+- **Decision tecnica clave**: la verificacion es una compuerta del grafo, no una instruccion del prompt. Pedirle a un modelo que no invente es una sugerencia; un nodo que compara la respuesta contra las fuentes y la descarta es un control.
+- **Otras piezas**: chunking contextual (cada fragmento lleva su pagina y su endpoint al embedding, porque cortar por encabezados deja decenas de secciones tituladas igual e indistinguibles), ciclo de autocorreccion con tope de intentos, y memoria del lado del servidor por `thread_id`.
+- **Corpus**: 503 fragmentos de 64 paginas de documentacion publica
+- **Codigo**: https://github.com/ferquintero2013/langgraph-doc-assistant
+
 ### Chatbot RAG sobre CV y portafolio | Septiembre 2026
 Sistema RAG que responde preguntas sobre mi trayectoria profesional usando unicamente mi CV y portafolio como fuente, con citacion obligatoria de la fuente de cada afirmacion.
 - **Stack**: Python, BM25 (rank-bm25), OpenAI (text-embedding-3-small + GPT-4o + GPT-4o-mini), API en funciones serverless de Vercel. Sin base de datos vectorial: el indice son vectores normalizados en un array de numpy, asi que la similitud coseno se resuelve en una multiplicacion de matrices. Desarrollado con Claude Code.
