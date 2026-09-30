@@ -112,8 +112,9 @@ Todo su trabajo desde julio de 2025 es por cuenta propia: proyectos propios, un 
 - **Responsabilidades**: Desarrollo de software en equipo Scrum
 
 ### DIIT Consultores SAS | Development and Consulting Engineer | Febrero 2013 - Marzo 2015 (2 anos 2 meses)
-- **Tecnologias**: Microsoft Dynamics AX ERP
+- **Tecnologias**: Microsoft Dynamics AX ERP, SQL
 - **Responsabilidades**: Desarrollo y consultoria en ERP, analisis de negocio, documentacion funcional y tecnica
+- **SQL**: consultas complejas sobre el modelo de datos del ERP — joins entre tablas de negocio, agregaciones y reportes. Es el origen de su experiencia con bases de datos relacionales, anterior a todo su trabajo de IA.
 
 ## Proyectos tecnicos publicos
 

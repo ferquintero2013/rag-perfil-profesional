@@ -27,6 +27,7 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 | Python | 4 | 1+ | Actual | Lenguaje principal de su trabajo actual de IA. Tres sistemas completos construidos y desplegados: `rag-perfil-profesional`, `langgraph-doc-assistant` y el MVP de validacion documental de UTEL, mas el sistema de diagnostico que corrio en produccion para un cliente real |
 | Java | 3 | 3+ | 2018 | BVC - Bolsa de Valores |
 | Scala | 3 | 2 | 2016 | BVC - desarrollo en equipo Scrum |
+| SQL | 4 | 2+ | Actual | Consultas complejas como desarrollador sobre Microsoft Dynamics AX en DIIT Consultores (2013-2015): joins entre tablas del ERP, agregaciones y reportes sobre el modelo de datos de negocio. Uso actual mas ligero en Postgres/Supabase. **Si preguntan por SQL, la respuesta es que si sabe**: no es una habilidad nueva, viene de su etapa de desarrollo |
 | Microsoft Dynamics AX | 3 | 2 | 2015 | DIIT Consultores - ERP |
 | JavaScript | 3 | 2+ | 2026 | Motor de clasificacion UTM (~300 lineas) en n8n para Onest Vision; Next.js 15 en Amapola Board |
 | Frontend (HTML/CSS/JS) | 2 | 1+ | Variable | Certificacion Platzi |
