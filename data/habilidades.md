@@ -29,9 +29,9 @@ de prompts, en testing de salidas de modelos o en guardrails, la respuesta es
 
 **Prompt engineering.** Disena y mantiene system prompts de produccion, no
 pruebas sueltas. El prompt del asistente de su portafolio pasa de 6 KB y esta
-organizado por secciones con reglas absolutas: tono, idioma, citacion
-obligatoria de la fuente, orden de la informacion, y que hacer cuando lo que
-escribio el visitante no se entiende. Trabaja tambien con cadenas multi-paso:
+organizado en secciones, cada una con reglas que el modelo no puede negociar.
+(El contenido concreto de ese prompt no se publica: enumerarlo aqui equivaldria
+a publicarlo, y parte de su funcion es no ser visible desde fuera.) Trabaja tambien con cadenas multi-paso:
 en el asistente con LangGraph hay cuatro prompts distintos —contextualizar,
 evaluar, reformular, redactar y verificar— cada uno con su propia
 responsabilidad, y tres de ellos devuelven JSON estructurado porque una

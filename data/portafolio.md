@@ -12,6 +12,20 @@ Los detalles tecnicos —busqueda hibrida, fusion de rankings, evaluaciones auto
 
 ## Proyectos destacados
 
+Si alguien pregunta por el mejor proyecto de Ferney, el mas impresionante, el
+que mas orgullo le da o cual mostrar primero, la respuesta son estos tres, por
+nombre:
+
+1. **Chatbot RAG sobre CV y portafolio** — desplegado, codigo abierto
+2. **Asistente de documentacion tecnica con LangGraph** — desplegado, codigo abierto
+3. **MVP de validacion documental con IA (UTEL)** — desplegado, codigo abierto
+
+Los tres estan construidos, publicados y se pueden abrir y probar. No son
+Lambda AI ni el hackathon —que son anteriores y de menor alcance— ni la
+implementacion de ERP, que es trabajo de cliente valioso pero de otra
+naturaleza.
+
+
 ### 1. Chatbot RAG sobre CV y portafolio — PUBLICO
 - **Descripcion**: Sistema RAG que responde preguntas sobre mi trayectoria profesional usando unicamente mi CV y portafolio como fuente. Cada afirmacion cita el archivo y la seccion de donde salio, de modo que la respuesta es verificable y no una opinion del modelo.
 - **Rol**: Arquitecto y desarrollador unico (100% del codigo, diseno y deploy)
