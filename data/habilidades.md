@@ -20,6 +20,62 @@ Las habilidades de gerencia de proyectos y agilismo que aparecen mas abajo son *
 | Meta APIs (WhatsApp/Messenger) | 3 | 1 | 2025 | Integracion con agentes de ventas |
 | GoHighLevel CRM | 3 | 1 | 2026 | Automatizaciones CRM, Onest Vision |
 
+## Prompt engineering y evaluacion de salidas de IA
+
+Esta es una habilidad central de Ferney y esta documentada aqui a proposito:
+si alguien pregunta si tiene experiencia en prompt engineering, en evaluacion
+de prompts, en testing de salidas de modelos o en guardrails, la respuesta es
+**si**, y abajo esta la evidencia concreta.
+
+**Prompt engineering.** Disena y mantiene system prompts de produccion, no
+pruebas sueltas. El prompt del asistente de su portafolio pasa de 6 KB y esta
+organizado por secciones con reglas absolutas: tono, idioma, citacion
+obligatoria de la fuente, orden de la informacion, y que hacer cuando lo que
+escribio el visitante no se entiende. Trabaja tambien con cadenas multi-paso:
+en el asistente con LangGraph hay cuatro prompts distintos —contextualizar,
+evaluar, reformular, redactar y verificar— cada uno con su propia
+responsabilidad, y tres de ellos devuelven JSON estructurado porque una
+decision de enrutamiento no puede depender de interpretar texto libre.
+
+**Optimizacion iterativa con evidencia.** Los prompts se afinan contra fallos
+reales, no por intuicion. Ejemplos documentados: una regla de citacion que
+estaba al final del prompt se ignoraba y hubo que promoverla a seccion propia;
+un reescritor de consultas traducia al espanol las preguntas en ingles porque
+sus instrucciones estaban en espanol; y un generador afirmaba que un endpoint
+"no requiere parametros" cuando lo cierto era que no los habia encontrado.
+
+**Evaluacion automatizada de salidas.** Mantiene una suite de evals con dos
+capas: aserciones deterministas —idioma de la respuesta, presencia de citas,
+terminos que deben o no aparecer— y un juez LLM que valora criterios que no se
+pueden expresar como substring. Son 25 casos en el asistente del portafolio,
+agrupados por categoria (honestidad, cobertura, idioma, tono, conversacion,
+identidad, seguridad) y 24 en el asistente con LangGraph. La suite corre antes
+de publicar cualquier cambio de perfil o de prompt, y es lo que dice si una
+modificacion mejoro o rompio algo. Tambien aprendio sus limites: las aserciones
+por substring dieron cinco falsos positivos porque "kubernetes expert" aparece
+dentro de "does not include Kubernetes expertise".
+
+**Guardrails y estrategias de respaldo.** Validacion de la salida antes de
+entregarla, rutas de declinacion explicitas, y la regla de no convertir "no lo
+encontre" en "no existe". En el asistente con LangGraph la verificacion es un
+nodo del grafo que descarta la respuesta si no queda respaldada por las
+fuentes: una compuerta, no una instruccion que el modelo pueda ignorar.
+
+**Versionado y despliegue de prompts.** Los prompts viven en git como codigo.
+Cada cambio queda en el historial con el motivo, y el pipeline de publicacion
+—sincronizar perfil, reconstruir indice, correr evals, publicar— se niega a
+continuar si hay casos fallando.
+
+**Control de costos.** Reparto deliberado entre modelos: el caro redacta lo
+que lee una persona, el barato toma las decisiones mecanicas del sistema
+(evaluar, reformular, verificar, clasificar).
+
+| Habilidad | Nivel (1-5) | Anos experiencia | Ultimo uso | Notas |
+|-----------|-------------|-------------------|------------|-------|
+| Prompt engineering | 4 | 1+ | Actual | System prompts de produccion, cadenas multi-paso, salidas JSON estructuradas |
+| Evaluacion de salidas de LLM | 4 | <1 | Actual | Suites de evals propias con aserciones deterministas y juez LLM, en dos sistemas |
+| Guardrails y validacion de salidas | 4 | <1 | Actual | Nodo verificador, rutas de declinacion, reglas anti-alucinacion |
+
 ## Desarrollo de Software
 
 | Habilidad | Nivel (1-5) | Anos experiencia | Ultimo uso | Notas |
