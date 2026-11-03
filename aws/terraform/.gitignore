@@ -1,0 +1,13 @@
+# El estado guarda los secretos en claro. Nunca va al repositorio.
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Los archivos de plan. Son binarios y llevan dentro los valores resueltos
+# de TODAS las variables, secretos incluidos. Parecen inocuos y no lo son.
+*.tfplan
+
+# Los valores reales de las variables. La plantilla si viaja.
+terraform.tfvars
+!terraform.tfvars.example

@@ -1,0 +1,9 @@
+openai==3.8.0
+numpy==2.5.2
+rank-bm25==0.2.2
+python-dotenv==1.2.3
+# La imagen base de Lambda ya trae boto3, pero se fija la version a
+# proposito: el runtime la actualiza por su cuenta, y una dependencia que
+# cambia sin que nadie la toque es como se rompen los despliegues de un dia
+# para otro sin razon aparente.
+boto3==1.43.123

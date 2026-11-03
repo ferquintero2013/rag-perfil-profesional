@@ -1,0 +1,7 @@
+# Copia este archivo como terraform.tfvars y pon los valores reales.
+# terraform.tfvars esta en .gitignore: nunca se sube.
+
+bucket_indice  = "ferney-rag-indice-221082209022"
+openai_api_key = "sk-proj-..."
+supabase_url   = "https://xxxx.supabase.co"
+supabase_key   = "sb_publishable_..."

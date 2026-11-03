@@ -1,0 +1,8 @@
+# Lo que no tiene por que entrar en la imagen
+*.md
+.env
+.env.*
+__pycache__/
+*.pyc
+terraform/
+.terraform/
