@@ -1,3 +1,7 @@
+# GENERADO POR sync_api.py. NO EDITAR A MANO.
+# La fuente esta en el repositorio rag-perfil-profesional:
+#   retriever.py
+
 import io
 import json
 import os

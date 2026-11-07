@@ -147,11 +147,32 @@ resource "aws_lambda_function" "asistente" {
   # construir el indice BM25. 30 segundos da margen de sobra.
   timeout = 30
 
-  # La memoria en Lambda tambien determina CPU: mas memoria es mas rapido,
-  # no solo mas espacio. Con 1024 MB el arranque en frio baja bastante
-  # frente a los 512 por defecto, y como se paga por milisegundo, a veces
-  # mas memoria sale mas barato. Es contraintuitivo y lo preguntan.
-  memory_size = 1024
+  # 512 MB, y el numero sale de medir, no de suponer.
+  #
+  # Es cierto que en Lambda la memoria tambien asigna CPU, asi que la
+  # intuicion dice que subirla acelera el arranque. Aqui no pasa. Cuatro
+  # arranques en frio por tamano, mediana del Init Duration:
+  #
+  #    512 MB   2267 ms
+  #   1024 MB   2240 ms
+  #   1769 MB   2249 ms     (el umbral de 1 vCPU completa)
+  #   2048 MB   2232 ms
+  #
+  # 35 ms de diferencia entre el menor y el mayor, con el cuadruple de
+  # memoria. La dispersion DENTRO de un mismo tamano fue de 617 ms, o sea
+  # casi veinte veces mayor que el efecto que se buscaba.
+  #
+  # La razon es que este arranque no gasta CPU: baja una imagen, importa
+  # numpy y trae 593 KB de S3. Es espera de entrada y salida, y la CPU de
+  # mas no acelera una espera.
+  #
+  # Max Memory Used en produccion: 182 MB. Reservar 1024 era pagar por el
+  # doble de GB-segundo sin recibir nada a cambio.
+  #
+  # Queda escrito porque la version anterior de este comentario afirmaba lo
+  # contrario, sin una sola medicion detras. En una entrevista eso se cae
+  # con una pregunta.
+  memory_size = 512
 
   # Cuantas ejecuciones simultaneas se permiten como maximo.
   #

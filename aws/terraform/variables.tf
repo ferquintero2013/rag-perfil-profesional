@@ -26,7 +26,14 @@ variable "prefijo_indice" {
 variable "origenes_permitidos" {
   description = "Dominios que pueden llamar a la funcion desde un navegador"
   type        = list(string)
-  default     = ["https://ferney-portfolio.vercel.app"]
+  default = [
+    "https://ferney-portfolio.vercel.app",
+    # Para probar el portafolio en local contra esta funcion sin tocar
+    # produccion. CORS lo aplica el navegador, no el servidor: sin esta
+    # linea, abrir el sitio desde localhost da un error de origen cruzado
+    # aunque la funcion responda perfectamente.
+    "http://localhost:8000",
+  ]
 }
 
 # --- Secretos ---
