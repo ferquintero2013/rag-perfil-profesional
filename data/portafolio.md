@@ -21,9 +21,14 @@ nombre:
 3. **MVP de validacion documental con IA (UTEL)** — desplegado, codigo abierto
 
 Los tres estan construidos, publicados y se pueden abrir y probar. No son
-Lambda AI ni el hackathon —que son anteriores y de menor alcance— ni la
+Lambda AI ni el hackathon, que son anteriores y de menor alcance, ni la
 implementacion de ERP, que es trabajo de cliente valioso pero de otra
 naturaleza.
+
+Si la pregunta es por experiencia en cloud, infraestructura o DevOps, el
+proyecto a mirar es el numero 2: la migracion del primero a AWS con la
+infraestructura en Terraform. Es el trabajo tecnico mas reciente, de noviembre
+de 2026.
 
 
 ### 1. Chatbot RAG sobre CV y portafolio — PUBLICO
@@ -37,10 +42,24 @@ naturaleza.
   - **Grounding estricto**: si el dato no esta en el corpus, lo dice; respeta matices (una habilidad en aprendizaje no se presenta como dominada).
   - **Curacion por allowlist**: el corpus publico es un subconjunto declarado explicitamente; lo nuevo es privado por defecto.
 - **Periodo**: Septiembre 2026
-- **Demo publico**: https://chat-perfil-ferney.streamlit.app/
+- **Demo publico**: integrado en el portafolio, https://ferney-portfolio.vercel.app/
 - **Codigo fuente**: https://github.com/ferquintero2013/rag-perfil-profesional
 
-### 2. Asistente de documentacion tecnica con LangGraph — PUBLICO
+### 2. Migracion del chatbot RAG a AWS con Terraform — PUBLICO
+- **Descripcion**: El mismo chatbot del proyecto anterior, migrado a AWS con toda la infraestructura declarada en Terraform. Corre hoy en las dos plataformas a la vez, con un solo motor y sin duplicar logica. No es un proyecto nuevo sino un sistema que ya estaba en produccion llevado a otra plataforma, que es lo que permite comparar el antes y el despues.
+- **Rol**: Arquitecto y desarrollador unico
+- **Tecnologias**: AWS Lambda (desde imagen de contenedor), Amazon ECR, Amazon S3, AWS IAM, Amazon CloudWatch, Terraform, Docker, boto3.
+- **Decisiones tecnicas destacadas**:
+  - **Contenedor en vez de zip**: numpy trae extensiones compiladas en C, y el binario de Windows falla al importar en Lambda. La imagen compila las dependencias sobre Amazon Linux, que es donde la funcion corre.
+  - **El indice fuera del despliegue**: vive en S3 y no dentro de la imagen, de modo que actualizar el perfil es subir un archivo y no reconstruir 225 MB. Un solo modulo de recuperacion decide si leer de S3 o del disco segun el entorno.
+  - **Menor privilegio**: el rol concede `s3:GetObject` sobre un unico prefijo de un unico bucket. La funcion no lleva credenciales, asume un rol y recibe temporales rotadas.
+  - **Medir antes que afirmar**: la migracion no mejoro la latencia, y el README lo dice. Midiendo arranques en frio a cuatro tamanos de memoria se vio que la configuracion inicial estaba justificada con una creencia y no con un dato. Se bajo de 1024 a 512 MB: mitad de costo, mismo rendimiento.
+  - **Sin API Gateway**: no hacia falta autenticacion, limites de tasa ni dominio propio. Agregar un servicio para poder decir que se uso es sobreingenieria.
+- **Depuracion destacada**: un `403 AccessDeniedException` que no dejaba rastro en CloudWatch, porque una Function URL publica necesita dos permisos de Lambda y la documentacion oficial describe uno solo. Seis hipotesis descartadas con evidencia antes de dar con la causa.
+- **Periodo**: Octubre - Noviembre 2026
+- **Codigo fuente**: https://github.com/ferquintero2013/rag-perfil-profesional (carpeta `aws/`)
+
+### 3. Asistente de documentacion tecnica con LangGraph — PUBLICO
 - **Descripcion**: Asistente que responde preguntas sobre la documentacion de una API y muestra el razonamiento que siguio para llegar a cada respuesta. A diferencia de un RAG lineal, la orquestacion es un grafo de LangGraph con decisiones y ciclos: evalua si lo que encontro responde de verdad, reformula la busqueda y reintenta si no, y verifica la respuesta contra las fuentes antes de entregarla. Si no queda respaldada, la descarta.
 - **Rol**: Arquitecto y desarrollador unico (100% del codigo, diseno y deploy)
 - **Tecnologias**: Python, LangGraph (estado tipado, aristas condicionales, ciclos, checkpointers, reducers), OpenAI (GPT-4o + GPT-4o-mini + text-embedding-3-small), rank-bm25, numpy, BeautifulSoup, Streamlit. Construido con Claude Code.
@@ -55,7 +74,7 @@ naturaleza.
 - **Codigo fuente**: https://github.com/ferquintero2013/langgraph-doc-assistant
 - **Nota**: es una demostracion tecnica independiente sobre documentacion publica de terceros, sin afiliacion con la empresa cuya documentacion se uso.
 
-### 3. MVP de Validacion Inteligente de Documentos con IA (UTEL) — PUBLICO
+### 4. MVP de Validacion Inteligente de Documentos con IA (UTEL) — PUBLICO
 - **Descripcion**: Sistema de hiperautomatizacion que valida expedientes de admision universitaria. Extrae datos de documentos con GPT-4o Vision, aplica reglas de negocio auditables, hace cross-check de identidad entre documentos para detectar posibles suplantaciones, y genera notificaciones personalizadas al aspirante con IA.
 - **Rol**: Arquitecto y desarrollador unico (100% del codigo, diseno y deploy)
 - **Tecnologias**: Python 3.14, Streamlit, OpenAI GPT-4o Vision + GPT-4o-mini, GitHub API, reglas deterministas de negocio, deploy en Streamlit Community Cloud. Construido usando Claude Code como companero de desarrollo.
@@ -66,7 +85,7 @@ naturaleza.
 - **Demo publico**: https://postulaciones-mvp.streamlit.app/
 - **Codigo fuente**: https://github.com/ferquintero2013/postulaciones-mvp-utel
 
-### 4. Implementacion ERP Cross-Country (cliente de manufactura y retail de moda)
+### 5. Implementacion ERP Cross-Country (cliente de manufactura y retail de moda)
 - **Descripcion**: Implementacion de Odoo ERP para operaciones en US, Colombia y Mexico con sincronizacion multi-plataforma (TikTok Shop, Amazon, Shopify)
 - **Rol**: Lider de desarrollo de software, IA y automatizacion, como independiente
 - **Tecnologias**: Odoo, integraciones e-commerce, herramientas IA
@@ -74,7 +93,7 @@ naturaleza.
 - **Periodo**: Marzo 2026 - Presente
 - **Link**: _(privado)_
 
-### 5. Automatizaciones CRM y motor de atribucion UTM (Onest Vision) — Cliente real
+### 6. Automatizaciones CRM y motor de atribucion UTM (Onest Vision) — Cliente real
 - **Descripcion**: Cuatro flujos en produccion sobre n8n autoalojado contra la API REST de GoHighLevel, implementando logica que el motor nativo de GHL no podia expresar: division de oportunidades por propiedad, clonado completo entre embudos con mas de 40 campos personalizados, enrutamiento de respuestas de encuesta a la oportunidad correcta sin duplicar, y un motor de atribucion UTM de unas 300 lineas de JavaScript
 - **Rol**: Independent Contractor (cliente pagante)
 - **Tecnologias**: n8n autoalojado, JavaScript, API REST de GoHighLevel, webhooks. **No Zapier**
@@ -82,7 +101,7 @@ naturaleza.
 - **Periodo**: Enero - Marzo 2026
 - **Link**: _(trabajo de cliente, no publico)_
 
-### 6. Hackathon EmprendIA LATAM - 1er Lugar
+### 7. Hackathon EmprendIA LATAM - 1er Lugar
 - **Descripcion**: Proyecto ganador del primer lugar en la categoria Best AI Automation usando n8n
 - **Rol**: Participante / Desarrollador
 - **Tecnologias**: n8n
@@ -90,7 +109,7 @@ naturaleza.
 - **Periodo**: 2025
 - **Link**: _(agregar si disponible)_
 
-### 7. Agentes IA de Soporte de Ventas (Lambda AI) — Proyecto propio
+### 8. Agentes IA de Soporte de Ventas (Lambda AI) — Proyecto propio
 - **Descripcion**: Prototipo de agentes IA de soporte de ventas construido con Meta APIs y ManyChat, integrando multiples repositorios de datos para automatizar captura, calificacion y gestion de leads. Iniciativa propia con el objetivo de lanzar un negocio de chatbots.
 - **Rol**: Creador y desarrollador unico (proyecto personal, no cliente)
 - **Tecnologias**: Meta APIs, ManyChat, n8n, integraciones de datos
@@ -98,7 +117,7 @@ naturaleza.
 - **Periodo**: Agosto - Diciembre 2025
 - **Link**: _(prototipo propio, codigo privado)_
 
-### 8. QA Lead - Proyecto Mayor de BVC
+### 9. QA Lead - Proyecto Mayor de BVC
 - **Descripcion**: Liderazgo del equipo de QA para uno de los proyectos mas grandes en la historia reciente de la Bolsa de Valores de Colombia
 - **Rol**: Senior Software QA Analyst - Team Leader
 - **Tecnologias**: Scala, Java, herramientas QA
@@ -106,7 +125,7 @@ naturaleza.
 - **Periodo**: 2015 - 2018
 - **Link**: _(confidencial)_
 
-### 9. Transformacion Agil - Nequi
+### 10. Transformacion Agil - Nequi
 - **Descripcion**: Mejora de productividad en la cadena de valor de desarrollo de producto de software de Nequi (fintech lider en Colombia)
 - **Rol**: Agile Leader
 - **Tecnologias**: Frameworks agiles, metricas de productividad

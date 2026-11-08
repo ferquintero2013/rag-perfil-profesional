@@ -16,6 +16,7 @@ ARCHIVOS_PUBLICOS = [
     "proyecto-agente-reuniones.md",
     "proyecto-onest-vision-ghl.md",
     "proyecto-asistente-docs-langgraph.md",
+    "proyecto-migracion-aws.md",
 ]
 
 

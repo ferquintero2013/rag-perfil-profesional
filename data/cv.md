@@ -118,8 +118,17 @@ Todo su trabajo desde julio de 2025 es por cuenta propia: proyectos propios, un 
 
 ## Proyectos tecnicos publicos
 
+### Migracion de un sistema RAG en produccion a AWS | Octubre - Noviembre 2026
+**Es el trabajo tecnico mas reciente de Ferney.** Movio a AWS el chatbot RAG de su portafolio, que ya estaba funcionando en Vercel, y dejo la infraestructura completa declarada en Terraform. El sistema corre hoy en las dos plataformas con el mismo motor.
+- **Stack**: AWS Lambda (desde imagen de contenedor), Amazon ECR, Amazon S3, AWS IAM, Amazon CloudWatch, Terraform, Docker, Python, boto3.
+- **Decision tecnica clave**: el indice de embeddings vive en S3 y no dentro de la imagen, para separar los datos del despliegue. Actualizar el perfil es subir un archivo, no reconstruir una imagen de 225 MB. Un unico modulo de recuperacion sirve en las dos plataformas: lee de S3 o del disco segun el entorno.
+- **Seguridad**: el rol de la funcion concede `s3:GetObject` sobre un solo prefijo de un solo bucket. La funcion no lleva credenciales: asume un rol y AWS le entrega temporales que rota solo.
+- **Medicion antes que afirmacion**: la migracion no mejoro la latencia y asi esta escrito en el README, porque el cuello de botella son las llamadas al modelo, iguales en cualquier plataforma. Midiendo arranques en frio a cuatro tamanos de memoria se comprobo que la configuracion inicial de 1024 MB estaba justificada con una creencia y no con un dato: la diferencia real era de 35 ms. Se bajo a 512 MB, mitad de costo e igual rendimiento.
+- **Depuracion destacada**: un `403 AccessDeniedException` sin una sola linea en CloudWatch, porque una Function URL publica necesita dos permisos de Lambda y la documentacion describe uno. Se descartaron seis hipotesis con evidencia antes de encontrarlo.
+- **Codigo**: https://github.com/ferquintero2013/rag-perfil-profesional (carpeta `aws/`)
+
 ### Asistente de documentacion tecnica con LangGraph | Septiembre 2026
-**Es el proyecto tecnico mas reciente de Ferney.** Asistente que responde preguntas sobre la documentacion de una API y muestra el razonamiento que siguio para cada respuesta. La orquestacion es un grafo de LangGraph con decisiones y ciclos, no un RAG lineal: evalua si lo recuperado responde de verdad, reformula la busqueda y reintenta si no, y verifica la respuesta contra las fuentes antes de entregarla. Si no queda respaldada, la descarta.
+Asistente que responde preguntas sobre la documentacion de una API y muestra el razonamiento que siguio para cada respuesta. La orquestacion es un grafo de LangGraph con decisiones y ciclos, no un RAG lineal: evalua si lo recuperado responde de verdad, reformula la busqueda y reintenta si no, y verifica la respuesta contra las fuentes antes de entregarla. Si no queda respaldada, la descarta.
 - **Stack**: Python, LangGraph (estado tipado, aristas condicionales, ciclos, checkpointers, reducers), OpenAI (GPT-4o + GPT-4o-mini + text-embedding-3-small), rank-bm25, numpy, BeautifulSoup, Streamlit. Desarrollado con Claude Code.
 - **Decision tecnica clave**: la verificacion es una compuerta del grafo, no una instruccion del prompt. Pedirle a un modelo que no invente es una sugerencia; un nodo que compara la respuesta contra las fuentes y la descarta es un control.
 - **Otras piezas**: chunking contextual (cada fragmento lleva su pagina y su endpoint al embedding, porque cortar por encabezados deja decenas de secciones tituladas igual e indistinguibles), ciclo de autocorreccion con tope de intentos, y memoria del lado del servidor por `thread_id`.
@@ -131,7 +140,7 @@ Sistema RAG que responde preguntas sobre mi trayectoria profesional usando unica
 - **Stack**: Python, BM25 (rank-bm25), OpenAI (text-embedding-3-small + GPT-4o + GPT-4o-mini), API en funciones serverless de Vercel. Sin base de datos vectorial: el indice son vectores normalizados en un array de numpy, asi que la similitud coseno se resuelve en una multiplicacion de matrices. Desarrollado con Claude Code.
 - **Decision tecnica clave**: busqueda hibrida (BM25 + embeddings fusionados con Reciprocal Rank Fusion). La busqueda puramente vectorial fallaba en preguntas sobre entidades nombradas ("¿sabe X?") por dilucion semantica en chunks tematicamente mixtos. HyDE se probo y se descarto con datos: mejoraba las distancias mientras empeoraba la relevancia.
 - **Otras piezas**: query rewriting previo al retrieval para soportar preguntas de seguimiento, grounding estricto anti-alucinacion, y curacion del corpus por allowlist explicita.
-- **Demo publico**: https://chat-perfil-ferney.streamlit.app/
+- **Demo publico**: integrado en el portafolio, https://ferney-portfolio.vercel.app/
 - **Codigo**: https://github.com/ferquintero2013/rag-perfil-profesional
 
 ### MVP de Validacion Inteligente de Documentos con IA | Agosto - Septiembre 2026
@@ -159,7 +168,7 @@ Sistema end-to-end de validacion automatizada de expedientes de admision univers
 - **Analisis de Datos con Power BI** — Platzi
 
 ### Ingenieria y cloud
-- **AWS Certified Cloud Practitioner** — Amazon Web Services (AWS)
+- **AWS Certified Cloud Practitioner** — Amazon Web Services (AWS). Nota: cubre fundamentos. La experiencia practica en AWS (Lambda, ECR, S3, IAM, CloudWatch y Terraform) viene del proyecto de migracion de noviembre de 2026, no de la certificacion.
 - **Arquitectura de Software** — Platzi
 - **Curso Practico de Frontend Developer** — Platzi
 - **Experto en Zapier** — Zapier

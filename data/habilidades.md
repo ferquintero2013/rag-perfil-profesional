@@ -88,6 +88,30 @@ que lee una persona, el barato toma las decisiones mecanicas del sistema
 | JavaScript | 3 | 2+ | 2026 | Motor de clasificacion UTM (~300 lineas) en n8n para Onest Vision; Next.js 15 en Amapola Board |
 | Frontend (HTML/CSS/JS) | 2 | 1+ | Variable | Certificacion Platzi |
 
+## Cloud e infraestructura
+
+Experiencia practica, con un sistema propio corriendo en AWS y la infraestructura declarada en Terraform. El codigo es publico y se puede abrir: https://github.com/ferquintero2013/rag-perfil-profesional, carpeta `aws/`.
+
+No se asignan niveles numericos en esta seccion a proposito. La evidencia es el repositorio, que dice mas que una escala.
+
+| Tecnologia | Donde se uso | Ultimo uso |
+|---|---|---|
+| AWS Lambda | Motor de un sistema RAG desplegado desde imagen de contenedor, con Function URL publica | 2026-11 |
+| Amazon ECR | Registro de la imagen, con politica de ciclo de vida | 2026-11 |
+| Amazon S3 | Indice de embeddings, con acceso publico bloqueado y lectura solo desde el rol de la funcion | 2026-11 |
+| AWS IAM | Rol de ejecucion con menor privilegio: `s3:GetObject` sobre un unico prefijo | 2026-11 |
+| Amazon CloudWatch | Logs con retencion definida, y analisis de `Init Duration` para medir arranques en frio | 2026-11 |
+| Terraform | Los 8 recursos del despliegue, incluyendo importar al estado infraestructura creada antes a mano | 2026-11 |
+| Docker | Imagen sobre la base de Lambda para Python, con las dependencias compiladas en el sistema destino | 2026-11 |
+| Vercel | Despliegue oficial del portafolio y de la API del asistente | 2026-11 |
+| Supabase / Postgres | Registro de consultas del asistente en produccion | 2026-11 |
+
+**Lo que sabe hacer, en concreto:** desplegar una funcion desde contenedor y no desde zip cuando las dependencias traen binarios compilados; separar los datos del despliegue para poder actualizar sin redesplegar; escribir una politica de permisos acotada en vez de copiar una abierta; medir una decision de configuracion y corregirla cuando el dato la contradice; y depurar un fallo que no deja rastro en los logs descartando hipotesis con evidencia.
+
+**Lo que no tiene, y conviene decirlo:** no ha operado Kubernetes ni EKS, no ha trabajado con ECS en un entorno real, no ha gestionado infraestructura en produccion para una organizacion, y su experiencia con Azure y GCP es nula. Lo que hay es un sistema propio, completo y publico, no anos de operacion a escala.
+
+**Formacion:** AWS Certified Cloud Practitioner. La certificacion es anterior a este trabajo practico y cubre fundamentos, no implementacion.
+
 ## ERP, CRM y Plataformas de Negocio
 
 Sistemas de negocio que Ferney ha integrado y automatizado: **ERP** (Odoo 19 Enterprise, Microsoft Dynamics AX), **CRM** (GoHighLevel) y canales de e-commerce (Shopify, Amazon, TikTok Shop, Mercado Libre). El trabajo tipico no es configurar la herramienta sino conectar el proceso entre ellas: que un pedido, un contacto o una referencia signifiquen lo mismo en todos los sistemas.
@@ -144,8 +168,8 @@ Sistemas de negocio que Ferney ha integrado y automatizado: **ERP** (Odoo 19 Ent
 | LangGraph | 2026-09 | Bootcamp Udemy (50.5 h) + proyecto propio `langgraph-doc-assistant` | **COMPLETADO 2026-09-24**: grafo con ciclo de autocorreccion en produccion — nodos de evaluacion y verificacion, ciclos con tope de intentos, memoria del lado del servidor via checkpointer por `thread_id`, y reducers para acumular historial. Codigo abierto: https://github.com/ferquintero2013/langgraph-doc-assistant |
 | Sistemas multi-agente | 2026-09 | Bootcamp Udemy (50.5 h) | Formacion completada. Cubre orquestacion multi-agente, memoria de largo plazo y human-in-the-loop. **Sin CrewAI**: modulo omitido a proposito para concentrar el tiempo en LangGraph. |
 | RAG en no-code (n8n + Vector Store) | 2025 | Proyecto propio | **Completado**: flujo RAG funcional en n8n con Vector Store node (Pinecone). Sin codigo propio — orquestacion no-code. |
-| RAG con codigo (Python + Vector DB) | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: sistema completo en Python — chunking estructural, embeddings, retrieval hibrido (BM25 + vectorial con RRF), query rewriting, grounding con citacion obligatoria y evals automatizados. Desplegado: https://chat-perfil-ferney.streamlit.app/ |
-| Vector databases | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: primero con ChromaDB via codigo (PersistentClient, collections, metadata, query por embeddings) y despues **retirado a proposito**: con un corpus de 73 fragmentos que ocupa medio megabyte, una base vectorial anade una dependencia y un proceso que no hacen falta. El indice final son vectores normalizados en un array de numpy, donde la similitud coseno es una multiplicacion de matrices. Conoce la herramienta y sabe cuando no usarla. Pinecone sigue siendo solo via n8n, no via codigo. |
+| RAG con codigo (Python + Vector DB) | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: sistema completo en Python — chunking estructural, embeddings, retrieval hibrido (BM25 + vectorial con RRF), query rewriting, grounding con citacion obligatoria y evals automatizados. Desplegado en el portafolio (https://ferney-portfolio.vercel.app/) y, en paralelo, sobre AWS Lambda |
+| Vector databases | 2026-05 | Proyecto propio `rag-perfil-profesional` | **COMPLETADO 2026-09-09**: primero con ChromaDB via codigo (PersistentClient, collections, metadata, query por embeddings) y despues **retirado a proposito**: con un corpus de 85 fragmentos que ocupa medio megabyte, una base vectorial anade una dependencia y un proceso que no hacen falta. El indice final son vectores normalizados en un array de numpy, donde la similitud coseno es una multiplicacion de matrices. Conoce la herramienta y sabe cuando no usarla. Pinecone sigue siendo solo via n8n, no via codigo. |
 
 ## Plan de aprendizaje completo
 Ver `coaching/plan-aprendizaje-ia.md` para roadmap detallado de 12 semanas.

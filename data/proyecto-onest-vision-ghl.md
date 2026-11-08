@@ -49,6 +49,10 @@ Ramas de decision principales: deteccion de senales de pago, identificacion de Q
 
 **Por que importa para el negocio**: la atribucion dejo de ser un dato en el que no se podia confiar. Con la taxonomia normalizada, el equipo de marketing puede calcular costo por lead por canal, distinguir que canal capto al lead de cual lo reactivo antes de cerrar — critico en un ciclo de venta inmobiliaria que dura semanas o meses — y mover presupuesto con datos en vez de intuicion.
 
+## Automatizaciones nativas de GoHighLevel
+
+Ademas de los cuatro flujos en n8n, construyo automatizaciones con el constructor de flujos propio de GoHighLevel para que los leads pasaran correctamente entre los embudos (pipelines). Lo nativo cubria el movimiento entre etapas y embudos; n8n se uso donde GHL no alcanzaba.
+
 ## Retos tecnicos que resolvio
 
 - **Formato JSON en n8n**: mezclar expresiones de n8n dentro de un cuerpo JSON crudo rompia la peticion. Se resolvio construyendo los objetos en nodos Code y serializando con JSON.stringify.

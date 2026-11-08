@@ -43,7 +43,7 @@ data/ (corpus publico)
    |  loader.py      <- chunking estructural por headers markdown
    |  indexer.py     <- embeddings (text-embedding-3-small)
    v
-index_vectors.npy  (matriz 85 x 1536, float32, 510 KB)
+index_vectors.npy  (matriz 98 x 1536, float32, 588 KB)
 index_meta.json    (de que archivo y seccion salio cada fila)
 
 Por cada pregunta:
@@ -167,7 +167,7 @@ hace debuggeable un sistema de IA.
 
 - **Python 3.12** en produccion, 3.14 en local
 - **OpenAI**: `text-embedding-3-small` (embeddings) y `gpt-4o` (generacion)
-- **numpy**: el indice es una matriz de 85 x 1536 en float32, y la busqueda
+- **numpy**: el indice es una matriz de 98 x 1536 en float32, y la busqueda
   semantica es un producto matricial. Con un corpus de este tamano, una base
   vectorial seria infraestructura sin trabajo que hacer
 - **rank-bm25**: busqueda por palabras clave
@@ -265,6 +265,11 @@ imagen en ECR        224.7 MB
 indice en S3         593 KB
 memoria x duracion   0.5 GB x ~2.5 s = 1.25 GB-s por peticion
 ```
+
+> Las cifras de esta seccion y de la anterior son las del dia de la medicion,
+> el 2026-11-07. El indice ha crecido despues a 98 fragmentos y 687 KB al
+> incorporar esta misma migracion al corpus. No se reescriben hacia atras:
+> una medicion vale por las condiciones en que se tomo.
 
 La capa gratuita de Lambda es de 1 millon de peticiones y 400.000 GB-segundo al
 mes, y no caduca. A 1,25 GB-segundo por peticion, eso cubre unas 320.000
@@ -377,7 +382,7 @@ streamlit run app.py
 
 - **La reescritura de pregunta anade una llamada extra al LLM** por turno (~0.3s y unos
   pocos centavos por cada mil preguntas). Se salta cuando no hay historial.
-- **Corpus pequeno** (85 chunks). Las distancias vectoriales viven en un rango estrecho
+- **Corpus pequeno** (98 chunks). Las distancias vectoriales viven en un rango estrecho
   porque todos los documentos hablan de la misma persona, asi que no es viable usar un
   umbral absoluto de distancia; solo el ranking relativo es util.
 - **Re-indexado manual.** No hay deteccion automatica de cambios en los archivos fuente.
