@@ -62,6 +62,12 @@ jobs:
         id: ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      # Hace falta un constructor que sepa empujar directo al registro y, sobre
+      # todo, al que se le pueda decir en que formato escribir. El de por
+      # defecto no sirve para esto, y el porque esta en el paso siguiente.
+      - name: Preparar el constructor de imagenes
+        uses: docker/setup-buildx-action@v3
+
       - name: Construir y subir la imagen
         env:
           REGISTRY: ${{ steps.ecr.outputs.registry }}
@@ -74,9 +80,23 @@ jobs:
           # Terraform cuando la funcion todavia no existe.
           IMAGEN="$REGISTRY/$REPO_ECR:$GITHUB_SHA"
 
-          docker build -t "$IMAGEN" -t "$REGISTRY/$REPO_ECR:latest" aws/
-          docker push "$IMAGEN"
-          docker push "$REGISTRY/$REPO_ECR:latest"
+          # Las tres opciones de abajo no son ceremonia. Un `docker build`
+          # normal en un runner moderno produce una imagen que Lambda rechaza
+          # con "image manifest, config or layer media type is not supported",
+          # por dos motivos distintos:
+          #
+          #   provenance y sbom   BuildKit adjunta atestaciones firmadas de
+          #                       como se construyo la imagen. Eso convierte lo
+          #                       que se sube en una LISTA de manifiestos, y
+          #                       Lambda espera uno solo.
+          #
+          #   oci-mediatypes      BuildKit escribe en formato OCI. Lambda solo
+          #                       acepta el formato de Docker, manifest v2
+          #                       schema 2.
+          #
+          # En local no se nota porque el error aparece al desplegar, no al
+          # construir.
+          docker buildx build             --provenance=false             --sbom=false             --output type=image,oci-mediatypes=false,push=true             -t "$IMAGEN"             -t "$REGISTRY/$REPO_ECR:latest"             aws/
 
           echo "IMAGEN=$IMAGEN" >> "$GITHUB_ENV"
 
