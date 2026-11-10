@@ -197,7 +197,7 @@ funcion Python                  Lambda desde imagen de contenedor
 indice en el repositorio        indice en S3, descargado al arrancar
 clave en variable de entorno    rol IAM con s3:GetObject sobre un prefijo
 logs de la plataforma           CloudWatch, 14 dias de retencion
-deploy = git push               build, push a ECR, update-function-code
+deploy = git push               deploy = git push, por GitHub Actions
 configurado en una consola      8 recursos en Terraform
 ```
 
@@ -329,6 +329,53 @@ La leccion no es que faltara un script. Es que **anadir un despliegue sin
 extender el mecanismo de distribucion crea una copia huerfana**, y una copia
 huerfana que funciona es peor que una que falla, porque nadie la mira.
 
+### El despliegue, de manual a automatico
+
+Durante la migracion el despliegue a AWS fue manual: construir la imagen,
+subirla a ECR y llamar a `update-function-code`, en ese orden y sin olvidar
+ninguno de los tres. Funciona mientras lo haga una sola persona que se acuerde.
+Ahora lo hace un workflow en cada push a `main` que toque `aws/`.
+
+La autenticacion es por OIDC, sin claves guardadas en el repositorio. GitHub
+emite un token firmado en cada ejecucion y AWS lo cambia por credenciales
+temporales que duran lo que dure el job. Es el mismo principio que ya usaba la
+funcion: identidades que asumen un rol, no credenciales permanentes.
+
+La imagen se etiqueta con el SHA del commit, no solo con `latest`, para poder
+saber que version esta corriendo mirando la funcion. Eso obligo a declarar
+quien es dueno de que: `ignore_changes` sobre `image_uri`, porque Terraform es
+dueno de la infraestructura y el pipeline es dueno de la version del codigo.
+Sin esa linea, el siguiente `apply` revertiria el despliegue.
+
+Cierra con una prueba de humo que invoca con el cuerpo vacio y exige un 400.
+Para contestar ese 400, Lambda tuvo que bajar la imagen nueva, importar numpy y
+traer el indice de S3, asi que verifica el arranque completo sin gastar un solo
+token.
+
+**Los dos fallos del primer intento valen mas que el resultado.**
+
+El primero fue un `AccessDenied` al asumir el rol, sin mas explicacion. El log
+del workflow no podia decir mas, porque el rechazo ocurre del lado de AWS y AWS
+no explica por que rechaza. El evento de `AssumeRoleWithWebIdentity` en
+CloudTrail si traia el `sub` que GitHub habia presentado de verdad:
+
+```
+repo:ferquintero2013@118778024/rag-perfil-profesional@1361957228:ref:refs/heads/main
+```
+
+GitHub ya no manda `propietario/repositorio`: manda los identificadores
+internos, que no cambian nunca. La condicion escrita a mano ataba el permiso a
+un nombre, la real lo ata a una identidad, y un repositorio borrado y vuelto a
+crear con el mismo nombre no la hereda.
+
+El segundo fue `The image manifest, config or layer media type is not
+supported`. Un `docker build` normal en un runner moderno usa BuildKit, que
+adjunta atestaciones de procedencia, convirtiendo lo subido en una lista de
+manifiestos, y escribe en formato OCI. Lambda quiere un manifiesto solo y en
+formato Docker, manifest v2 schema 2.
+
+Ninguno de los dos se ve al construir en local. Los dos aparecen al desplegar.
+
 ### Lo que no se hizo, y por que
 
 - **API Gateway.** Aporta autenticacion, limites de tasa y dominios propios, y
@@ -337,11 +384,6 @@ huerfana que funciona es peor que una que falla, porque nadie la mira.
 - **Concurrencia reservada.** Esta escrita y comentada en el Terraform. AWS
   exige dejar al menos 10 ejecuciones sin reservar, y esta cuenta tiene un
   limite total de 10. El techo de la cuenta ya cumple la funcion.
-- **Reconstruir la imagen tras reorganizar el sincronizador.** Los archivos de
-  `aws/` cambiaron solo en la cabecera generada, asi que la imagen desplegada es
-  funcionalmente identica a lo que hay en el repositorio. Aun asi, lo correcto
-  es que lo desplegado salga de lo versionado, y eso queda pendiente del
-  proximo build.
 - **Bedrock, evaluaciones en CI y ECS.** Son los siguientes pasos del plan, no
   omisiones de este.
 
