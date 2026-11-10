@@ -1,0 +1,127 @@
+# Despliegue del asistente a AWS Lambda.
+#
+# Antes de esto el despliegue era: construir la imagen en local, subirla a ECR
+# y llamar a update-function-code a mano. Funciona mientras lo haga una sola
+# persona que se acuerde de los tres pasos y los haga en orden.
+#
+# Lo que resuelve tenerlo aqui no es ahorrar tecleo. Es que lo que corre en
+# produccion sea exactamente lo que dice el ultimo commit, y que se pueda
+# saber cual, sin preguntarle a nadie.
+
+name: Desplegar a AWS Lambda
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # Solo cuando cambia algo que entra en la imagen. Editar el README o un
+      # script de la raiz no tiene por que reconstruir y redesplegar.
+      - "aws/**"
+      # La infraestructura es de Terraform, no de este pipeline. Un cambio en
+      # un .tf no cambia la imagen.
+      - "!aws/terraform/**"
+      - ".github/workflows/desplegar-aws.yml"
+
+  # Para poder lanzarlo a mano desde la pestana Actions sin inventar un commit.
+  workflow_dispatch:
+
+# Sin claves guardadas en el repositorio.
+#
+#   id-token: write   permite pedirle a GitHub el token firmado que AWS cambia
+#                     por credenciales temporales. Es lo unico que habilita OIDC.
+#   contents: read    leer el codigo. Nada mas: este workflow no escribe en el
+#                     repositorio, asi que no pide permiso para hacerlo.
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  FUNCION: rag-portafolio
+  REPO_ECR: rag-portafolio
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Traer el codigo
+        uses: actions/checkout@v4
+
+      - name: Asumir el rol en AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # El ARN del rol. Esta en un secreto no porque sea sensible, que no
+          # lo es, sino para no publicar el numero de cuenta en un repositorio
+          # abierto. Lo que protege el rol es la condicion de su trust policy,
+          # en aws/terraform/cicd.tf.
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Autenticar contra ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Construir y subir la imagen
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+
+          # Dos etiquetas para la misma imagen. La del SHA es la que importa:
+          # identifica sin ambiguedad que commit esta corriendo. ":latest" se
+          # mantiene solo porque es a lo que apunta el primer apply de
+          # Terraform cuando la funcion todavia no existe.
+          IMAGEN="$REGISTRY/$REPO_ECR:$GITHUB_SHA"
+
+          docker build -t "$IMAGEN" -t "$REGISTRY/$REPO_ECR:latest" aws/
+          docker push "$IMAGEN"
+          docker push "$REGISTRY/$REPO_ECR:latest"
+
+          echo "IMAGEN=$IMAGEN" >> "$GITHUB_ENV"
+
+      - name: Actualizar la funcion
+        run: |
+          set -euo pipefail
+
+          # Subir la imagen a ECR no actualiza nada. La funcion quedo apuntando
+          # a un digest concreto cuando se desplego, y ahi sigue hasta que
+          # alguien se lo diga. Este es ese alguien.
+          aws lambda update-function-code \
+            --function-name "$FUNCION" \
+            --image-uri "$IMAGEN" \
+            --no-cli-pager
+
+          # update-function-code vuelve enseguida, pero la funcion tarda unos
+          # segundos en quedar lista. Sin esta espera, la prueba de abajo
+          # correria contra la version vieja y pasaria aunque la nueva este rota.
+          aws lambda wait function-updated --function-name "$FUNCION"
+
+      - name: Probar que la nueva version arranca
+        run: |
+          set -euo pipefail
+
+          # Se invoca con el cuerpo vacio a proposito. El handler valida la
+          # pregunta antes de llamar al modelo, asi que devuelve 400 sin gastar
+          # un solo token.
+          #
+          # Un 400 aqui no es un fallo, es la prueba: para contestarlo, Lambda
+          # tuvo que bajar la imagen nueva, importar numpy y traer el indice de
+          # S3. Si cualquiera de esas tres cosas estuviera rota, esto seria 500
+          # o no responderia. Verifica el arranque completo y cuesta cero.
+          aws lambda invoke \
+            --function-name "$FUNCION" \
+            --cli-binary-format raw-in-base64-out \
+            --payload '{"body":"{}"}' \
+            --no-cli-pager \
+            respuesta.json > /dev/null
+
+          echo "Respuesta: $(cat respuesta.json)"
+
+          codigo=$(jq -r '.statusCode' respuesta.json)
+          if [ "$codigo" != "400" ]; then
+            echo "FALLO: se esperaba 400 y llego $codigo"
+            exit 1
+          fi
+
+          echo "La funcion arranco y respondio. Desplegado $GITHUB_SHA"

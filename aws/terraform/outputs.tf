@@ -19,3 +19,8 @@ output "grupo_logs" {
   description = "Donde mirar cuando algo falle"
   value       = aws_cloudwatch_log_group.lambda.name
 }
+
+output "rol_github_actions" {
+  description = "ARN del rol que asume el pipeline. Va al secreto AWS_ROLE_ARN del repositorio"
+  value       = aws_iam_role.github_actions.arn
+}

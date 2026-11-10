@@ -143,6 +143,21 @@ resource "aws_lambda_function" "asistente" {
   package_type = "Image"
   image_uri    = "${aws_ecr_repository.imagen.repository_url}:latest"
 
+  # A partir de aqui la imagen la manda el pipeline, no Terraform.
+  #
+  # El despliegue sube la imagen etiquetada con el SHA del commit y llama a
+  # update-function-code. Terraform, que tiene escrito :latest, leeria eso como
+  # una desviacion y en el siguiente apply la revertiria, dejando corriendo una
+  # version distinta de la que dice el ultimo commit.
+  #
+  # Asi que se declara explicito quien es dueno de que: Terraform es dueno de
+  # la infraestructura, el pipeline es dueno de la version del codigo. El
+  # :latest de arriba solo actua en el primer apply, cuando la funcion no
+  # existe todavia.
+  lifecycle {
+    ignore_changes = [image_uri]
+  }
+
   # El arranque en frio tiene que bajar el indice de S3, cargar numpy y
   # construir el indice BM25. 30 segundos da margen de sobra.
   timeout = 30

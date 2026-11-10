@@ -23,6 +23,12 @@ variable "prefijo_indice" {
   default     = "indice"
 }
 
+variable "repositorio_github" {
+  description = "Repositorio autorizado a desplegar, en formato propietario/nombre"
+  type        = string
+  default     = "ferquintero2013/rag-perfil-profesional"
+}
+
 variable "origenes_permitidos" {
   description = "Dominios que pueden llamar a la funcion desde un navegador"
   type        = list(string)
