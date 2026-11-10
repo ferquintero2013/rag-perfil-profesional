@@ -59,6 +59,19 @@ resource "aws_iam_role" "github_actions" {
       # literalmente de que repositorio y de que rama viene. Al exigirlo exacto,
       # un fork no sirve, una rama distinta no sirve, y un pull request tampoco,
       # porque su sub tiene otra forma (pull_request en vez de ref).
+      #
+      # Los numeros del valor no son adorno ni se pueden omitir. GitHub ya no
+      # manda solo el nombre: manda propietario@id/repositorio@id, con los
+      # identificadores internos, que no cambian nunca. Eso cierra un hueco que
+      # el nombre por si solo dejaba abierto. Si manana se borra este
+      # repositorio y alguien crea otro que se llame igual, su ID es distinto y
+      # no hereda el permiso.
+      #
+      # Salio de depurar: el primer intento fallo con un AccessDenied seco, sin
+      # mas explicacion. El evento de AssumeRoleWithWebIdentity en CloudTrail si
+      # traia el sub exacto que GitHub habia presentado, y ahi estaba la
+      # diferencia. El log del workflow nunca lo habria dicho, porque el error
+      # ocurre del lado de AWS.
       Condition = {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"

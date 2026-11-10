@@ -24,9 +24,9 @@ variable "prefijo_indice" {
 }
 
 variable "repositorio_github" {
-  description = "Repositorio autorizado a desplegar, en formato propietario/nombre"
+  description = "Repositorio autorizado a desplegar, con los IDs inmutables que GitHub escribe en el token: propietario@id/repositorio@id"
   type        = string
-  default     = "ferquintero2013/rag-perfil-profesional"
+  default     = "ferquintero2013@118778024/rag-perfil-profesional@1361957228"
 }
 
 variable "origenes_permitidos" {
