@@ -64,7 +64,22 @@ CASOS = [
         "categoria": "honestidad",
         "pregunta": "¿Cuantos anos de experiencia tiene con LangChain?",
         "debe_citar": None,
-        "mood": ["declined", "answering"],
+        # "unsure" se agrego el 2026-11-11. El caso fallaba de forma
+        # intermitente: tres corridas seguidas sobre el mismo indice dieron
+        # PASS, FAIL, FAIL, y en las dos que fallaron la RESPUESTA era
+        # correcta. Declinaba, no inventaba anos y distinguia LangGraph de
+        # LangChain. Lo unico que cambiaba era la etiqueta que el modelo se
+        # pone a si mismo.
+        #
+        # Y "unsure" es, si acaso, la etiqueta mas honesta para esta
+        # pregunta: no hay experiencia documentada con LangChain pero si con
+        # una libreria de la misma familia, que es precisamente una respuesta
+        # con matiz. El caso no la habia previsto.
+        #
+        # La leccion va mas alla de este caso: afirmar sobre un campo que el
+        # modelo declara de si mismo hereda su variabilidad, y la prueba mide
+        # la etiqueta en vez de medir la respuesta.
+        "mood": ["declined", "answering", "unsure"],
         "idioma": "es",
         "criterio": (
             "No hay nada sobre LangChain en el perfil. Debe decirlo en vez de "
@@ -167,13 +182,23 @@ CASOS = [
     {
         "categoria": "idioma",
         "pregunta": "Does he have experience with Terraform?",
-        "debe_citar": None,
-        "mood": ["declined", "answering"],
+        "debe_citar": True,
+        "mood": ["answering", "confident"],
         "idioma": "en",
+        # Actualizado el 2026-11-11. Este caso nacio esperando que DECLINARA,
+        # porque cuando se escribio Ferney no tenia Terraform. Ya lo tiene: la
+        # infraestructura de AWS esta declarada en Terraform y documentada en
+        # el perfil, asi que declinar seria ahora la respuesta incorrecta.
+        #
+        # Lo que el caso vino a probar nunca fue el contenido, era el IDIOMA:
+        # el contexto recuperado esta en espanol y arrastraba el idioma de la
+        # respuesta, de modo que una pregunta en ingles se contestaba en
+        # espanol. Esa es la regresion que vigila, y sigue vigilandola.
         "criterio": (
-            "Declina, pero en INGLES. Es el caso que fallaba antes: el contexto "
-            "recuperado esta en espanol y arrastraba el idioma de la respuesta. "
-            "Puede ofrecer algo cercano y documentado si lo cita."
+            "Confirma la experiencia con Terraform citando el perfil, pero en "
+            "INGLES. El contenido recuperado esta en espanol y la regresion que "
+            "este caso vigila es que arrastre ese idioma a la respuesta. No "
+            "debe inventar anos de experiencia ni cargos que no esten escritos."
         ),
     },
 

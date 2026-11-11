@@ -29,6 +29,13 @@ import sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PY = sys.executable
 
+# La consola de Windows arranca en cp1252, que no sabe escribir una flecha
+# ni una tilde. Cualquier print con un caracter fuera de ese juego mata el
+# subproceso con UnicodeEncodeError, y el paso se reporta como fallo
+# aunque el trabajo haya salido bien. Pasarle utf-8 a los hijos lo evita
+# sin tocar cada script por separado.
+ENTORNO = dict(os.environ, PYTHONIOENCODING="utf-8")
+
 VERDE = "\033[32m"
 ROJO = "\033[31m"
 GRIS = "\033[90m"
@@ -40,7 +47,7 @@ def paso(numero, titulo, comando, tolerar_fallo=False):
     print(f"\n{NEGRITA}[{numero}] {titulo}{FIN}")
     print(f"{GRIS}    $ {' '.join(comando[1:])}{FIN}\n")
 
-    r = subprocess.run(comando, cwd=BASE_DIR)
+    r = subprocess.run(comando, cwd=BASE_DIR, env=ENTORNO)
 
     if r.returncode != 0 and not tolerar_fallo:
         print(f"\n{ROJO}  Fallo en el paso {numero}. Se detiene aqui.{FIN}\n")

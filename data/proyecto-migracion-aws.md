@@ -2,6 +2,7 @@
 
 > Periodo: octubre y noviembre de 2026. Proyecto propio, codigo abierto.
 > Repositorio: https://github.com/ferquintero2013/rag-perfil-profesional
+> Demo del despliegue en AWS: https://ferquintero2013.github.io/rag-perfil-profesional/
 > El Terraform completo esta en la carpeta `aws/terraform/` de ese repositorio.
 
 ## Que hizo
@@ -99,6 +100,18 @@ Antes de crear nada se reviso la cuenta. Habia un usuario IAM sin usar desde hac
 - Capacidad de depurar un fallo que no deja logs, descartando hipotesis con evidencia
 - Disposicion a medir una decision propia y a corregirla cuando el dato la contradice
 
+## Una cara para el backend
+
+El backend estuvo publico desde el primer despliegue, pero solo hablaba JSON por POST, asi que se podia contar y no mostrar. Se le puso una pagina estatica en GitHub Pages que llama a la Function URL: https://ferquintero2013.github.io/rag-perfil-profesional/
+
+Sin frameworks ni CDN, porque para un formulario y una lista traer una libreria seria el mismo error que agregar un servicio para poder decir que se uso. La pagina muestra las fuentes citadas de cada respuesta, que es el punto de un RAG, y el tiempo que tardo, porque un arranque en frio de entre 8 y 13 segundos parece una averia si no se explica.
+
+El endpoint esta a la vista en el codigo del cliente, y eso es deliberado: una pagina estatica que llama a una API lleva la direccion dentro, y meterla en una variable no la oculta de las herramientas del navegador. El control del gasto esta del otro lado, en el tope de consumo de la cuenta de OpenAI. La Function URL no tiene autenticacion, y eso es una decision con contrapartida, no un descuido.
+
+El origen de GitHub Pages se agrego a la lista de CORS de la funcion. Comprobarlo deja ver por que CORS se depura en el navegador y no en los logs del servidor: el preflight desde el origen permitido devuelve 200 con el encabezado `Access-Control-Allow-Origin`, y desde cualquier otro origen devuelve 200 sin el. La funcion responde igual a todo el mundo; es el navegador del visitante quien bloquea la respuesta por la ausencia del encabezado.
+
+Vercel sigue siendo el portafolio oficial. Esta pagina no lo reemplaza, le pone cara al otro despliegue.
+
 ## Tecnologias
 
-AWS Lambda, Amazon ECR, Amazon S3, AWS IAM, AWS STS, AWS CloudTrail, Amazon CloudWatch, Terraform, Docker, BuildKit, GitHub Actions, OIDC, Python, boto3, numpy.
+AWS Lambda, Amazon ECR, Amazon S3, AWS IAM, AWS STS, AWS CloudTrail, Amazon CloudWatch, Terraform, Docker, BuildKit, GitHub Actions, OIDC, GitHub Pages, Python, boto3, numpy.

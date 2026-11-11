@@ -61,6 +61,7 @@ de 2026.
 - **Depuracion destacada**: un `403 AccessDeniedException` que no dejaba rastro en CloudWatch, porque una Function URL publica necesita dos permisos de Lambda y la documentacion oficial describe uno solo. Seis hipotesis descartadas con evidencia antes de dar con la causa.
 - **Dos fallas del pipeline, documentadas**: un `AccessDenied` al asumir el rol, imposible de diagnosticar desde el log de GitHub porque AWS no explica por que rechaza un token, y que se resolvio leyendo el sujeto real en CloudTrail: GitHub manda identificadores inmutables del repositorio, no su nombre. Y una imagen que se construia bien en local y Lambda rechazaba, porque BuildKit emite tipos de medio OCI y adjunta certificados de procedencia, lo que produce una lista de manifiestos donde Lambda exige uno solo. Las dos fallas comparten la leccion: el error aparece en la frontera, y "funciona en mi maquina" no ejercita la frontera del despliegue.
 - **Periodo**: Octubre - Noviembre 2026
+- **Demo publico del despliegue en AWS**: https://ferquintero2013.github.io/rag-perfil-profesional/ (pagina estatica en GitHub Pages que llama a la Function URL de Lambda; muestra las fuentes citadas y el tiempo de cada respuesta, incluido el arranque en frio)
 - **Codigo fuente**: https://github.com/ferquintero2013/rag-perfil-profesional (carpeta `aws/`)
 
 ### 3. Asistente de documentacion tecnica con LangGraph — PUBLICO

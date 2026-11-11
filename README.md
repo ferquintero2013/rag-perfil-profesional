@@ -198,7 +198,7 @@ indice en el repositorio        indice en S3, descargado al arrancar
 clave en variable de entorno    rol IAM con s3:GetObject sobre un prefijo
 logs de la plataforma           CloudWatch, 14 dias de retencion
 deploy = git push               deploy = git push, por GitHub Actions
-configurado en una consola      8 recursos en Terraform
+configurado en una consola      11 recursos en Terraform
 ```
 
 ### Lo que midio la migracion
@@ -376,6 +376,101 @@ formato Docker, manifest v2 schema 2.
 
 Ninguno de los dos se ve al construir en local. Los dos aparecen al desplegar.
 
+### La misma leccion, otra vez
+
+Arriba esta escrito en negrita que **anadir un despliegue sin extender el
+mecanismo de distribucion crea una copia huerfana**. Una semana despues de
+escribirlo, el mismo error con otra victima.
+
+`actualizar.py` existe, segun su propio docstring, "para que no haya que
+acordarse de los cinco" eslabones de la cadena. Eran cinco y faltaba uno. El
+indice reconstruido llegaba a Vercel, porque `sync_api.py` lo copia al lado del
+codigo en el repositorio del portafolio. A Lambda no llegaba nunca: alli el
+indice no viaja en la imagen, vive en S3, y ningun paso lo subia.
+
+Lo grave no es que fallara. Es que no fallaba:
+
+```
+$ python actualizar.py
+  [1] Copiar del perfil al corpus publico      OK
+  [2] Regenerar embeddings e indice            OK
+  [3] Comprobar que sigue respondiendo bien    25/25
+  [4] Copiar el motor al repositorio           OK
+  Listo.
+```
+
+Cadena en verde, y Lambda respondiendo con el perfil de la semana anterior. Se
+descubrio usando el sistema, no leyendolo: preguntarle al endpoint por CI/CD
+devolvio "no hay evidencia de que Ferney tenga experiencia directa con CI/CD"
+el dia despues de haber montado el pipeline.
+
+Lo cierra `publicar_indice.py`, como paso 5. Tres decisiones dentro:
+
+- **El nombre del bucket no esta escrito en el script.** Sale de
+  `terraform output -raw bucket_indice`, o de `INDEX_BUCKET` si esta definida.
+  Escribirlo a mano seria una tercera copia del mismo dato, que es la forma en
+  que empezo este problema.
+- **Falla fuerte a proposito.** La tentacion es tolerar el fallo para que la
+  cadena no se corte cuando faltan credenciales. Esa tolerancia es justo el bug
+  que el paso vino a cerrar.
+- **El mensaje dice cuando se vera el efecto**, no solo que subio: Lambda lee el
+  indice al arrancar en frio, asi que un contenedor caliente sigue respondiendo
+  con el anterior unos minutos.
+
+Y un tercer hallazgo del mismo tipo: el mensaje de cierre de `sync_api.py`
+seguia diciendo que para AWS habia que reconstruir la imagen y correr
+`update-function-code` a mano. Dejo de ser verdad el dia que el despliegue paso
+a GitHub Actions. **Un mensaje desactualizado es peor que no tener mensaje,
+porque se obedece.**
+
+### Una cara para el backend
+
+El backend estaba publico desde el primer despliegue, pero solo hablaba JSON por
+POST. Se podia contar y no mostrar, que para un portafolio es casi lo mismo que
+no existir.
+
+**Demo:** https://ferquintero2013.github.io/rag-perfil-profesional/
+
+Una pagina en `docs/`, servida por GitHub Pages, que llama a la Function URL.
+Sin frameworks, sin CDN, sin fuentes remotas: para un formulario y una lista,
+traer 80 KB de libreria seria el mismo error que agregar API Gateway para poder
+decir que se uso.
+
+Tres cosas que la pagina hace a proposito:
+
+- **Muestra el tiempo de cada respuesta.** El arranque en frio tarda entre 8 y
+  13 segundos y parece una averia si no se explica. Con el numero a la vista,
+  deja de ser un sintoma y pasa a ser un dato.
+- **Muestra las fuentes citadas.** Es el punto de un RAG: que la respuesta sea
+  rastreable. Una demo que solo muestra texto no demuestra nada que un modelo
+  suelto no pueda fingir.
+- **No esconde el endpoint.** Esta en el codigo del cliente porque no hay otro
+  sitio donde pueda estar: una pagina estatica que llama a una API lleva la
+  direccion dentro, y meterla en una variable no la oculta de las herramientas
+  del navegador. El control del gasto esta del otro lado, en el tope de consumo
+  de la cuenta de OpenAI. La Function URL no tiene autenticacion, y eso es una
+  decision con su contrapartida, no un descuido.
+
+El origen de GitHub Pages esta en la lista de CORS de la Function URL. Vale la
+pena ver como se comporta, porque explica por que CORS se depura en el navegador
+y no en los logs del servidor:
+
+```
+$ curl -i -X OPTIONS <function-url> -H "Origin: https://ferquintero2013.github.io"
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://ferquintero2013.github.io
+
+$ curl -i -X OPTIONS <function-url> -H "Origin: https://cualquier-otro.example"
+HTTP/1.1 200 OK
+```
+
+Los dos devuelven 200. La diferencia es la **ausencia** del encabezado en el
+segundo, y es el navegador del visitante el que decide bloquear la respuesta por
+eso. La funcion responde igual a todo el mundo.
+
+Vercel sigue siendo el portafolio oficial. Esta pagina no lo reemplaza, le pone
+cara al otro despliegue.
+
 ### Lo que no se hizo, y por que
 
 - **API Gateway.** Aporta autenticacion, limites de tasa y dominios propios, y
@@ -384,6 +479,15 @@ Ninguno de los dos se ve al construir en local. Los dos aparecen al desplegar.
 - **Concurrencia reservada.** Esta escrita y comentada en el Terraform. AWS
   exige dejar al menos 10 ejecuciones sin reservar, y esta cuenta tiene un
   limite total de 10. El techo de la cuenta ya cumple la funcion.
+- **Integracion continua.** Lo que hay montado es entrega continua: el pipeline
+  construye, publica, despliega y corre una prueba de humo. No hay suite de
+  pruebas por pull request ni proteccion de rama, porque el repositorio es de un
+  solo autor y exigir aprobaciones bloquearia al unico que puede darlas. Se
+  nombra como lo que es en vez de llamarlo CI/CD y esperar que nadie pregunte.
+- **CloudFront y dominio propio para la demo.** La pagina se sirve desde GitHub
+  Pages, que ya da HTTPS y no cuesta nada. Montar una distribucion para una
+  pagina estatica de un portafolio es, otra vez, agregar un servicio para poder
+  decir que se uso.
 - **Bedrock, evaluaciones en CI y ECS.** Son los siguientes pasos del plan, no
   omisiones de este.
 
@@ -424,10 +528,49 @@ streamlit run app.py
 
 - **La reescritura de pregunta anade una llamada extra al LLM** por turno (~0.3s y unos
   pocos centavos por cada mil preguntas). Se salta cuando no hay historial.
-- **Corpus pequeno** (98 chunks). Las distancias vectoriales viven en un rango estrecho
+- **Corpus pequeno** (99 chunks). Las distancias vectoriales viven en un rango estrecho
   porque todos los documentos hablan de la misma persona, asi que no es viable usar un
   umbral absoluto de distancia; solo el ranking relativo es util.
 - **Re-indexado manual.** No hay deteccion automatica de cambios en los archivos fuente.
+- **La suite de evaluacion no es un semaforo fiable, y la razon es mas de fondo
+  que un juez ruidoso.** Lo primero que se noto fue el juez LLM: dos corridas
+  seguidas sobre el mismo indice, sin cambiar una linea en medio, dieron 19/25 y
+  22/25 con conjuntos distintos de casos fallidos. Y en una de ellas reprobo un
+  caso por hacer exactamente lo que su propio criterio permitia: el criterio de
+  "Dame info" dice "debe responder del perfil **o** pedir una aclaracion
+  limpia", el asistente respondio del perfil, y el juez lo marco mal por no
+  pedir aclaracion.
+
+  La conclusion facil era "el juez es el problema, las aserciones deterministas
+  son la compuerta de verdad". Se escribio eso aqui y duro veinte minutos: tres
+  corridas de `--sin-juez` sobre el mismo indice dieron PASS, FAIL, FAIL en el
+  caso de LangChain. El motivo del fallo:
+
+  ```
+  → mood=unsure, esperado ['declined', 'answering']
+  respuesta: "Ferney no tiene experiencia documentada con LangChain. Aunque ha
+              trabajado con LangGraph, que es una libreria distinta de la misma
+              familia, ..."
+  ```
+
+  La respuesta era correcta en las tres corridas. Declinaba, no inventaba anos y
+  distinguia LangGraph de LangChain. Lo unico que cambiaba era `mood`, que es una
+  etiqueta que el modelo se pone a si mismo. **La asercion no es menos
+  determinista que el juez: es determinista sobre una entrada que no lo es.**
+
+  Es el mismo error de diseno que aparece en el MVP de validacion documental de
+  este portafolio, donde el indice de confianza tambien lo autodeclara el modelo.
+  Alli esta mitigado porque la confianza es una de cinco reglas y las otras cuatro
+  son deterministas de verdad. Aqui no estaba mitigado: el caso media la etiqueta
+  en lugar de medir la respuesta.
+
+  Lo que se puede afirmar hoy, sin adornos: la suite sirve para encontrar
+  regresiones reales y ha encontrado varias, pero su tasa de falsos positivos es
+  lo bastante alta como para que `actualizar.py` se detenga con frecuencia por
+  cosas que no son regresiones, y la decision de continuar la toma quien lee los
+  motivos. Para convertirla en compuerta hay dos caminos y los dos estan
+  pendientes: afirmar sobre lo que la respuesta dice y no sobre lo que el modelo
+  dice de ella, y correr cada caso varias veces en vez de una.
 
 ---
 
