@@ -39,6 +39,10 @@ variable "origenes_permitidos" {
     # linea, abrir el sitio desde localhost da un error de origen cruzado
     # aunque la funcion responda perfectamente.
     "http://localhost:8000",
+    # La pagina de demostracion, servida por GitHub Pages desde la carpeta
+    # docs/ de este mismo repositorio. El origen es solo esquema y host: la
+    # ruta del repositorio no va aqui, porque CORS no la mira.
+    "https://ferquintero2013.github.io",
   ]
 }
 

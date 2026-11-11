@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asistente RAG en AWS Lambda</title>
+<meta name="description" content="Demo del backend RAG desplegado en AWS Lambda: Terraform, imagen de contenedor, indice en S3 y despliegue por GitHub Actions.">
+
+<!--
+  Esta pagina existe por una razon concreta: el backend del asistente
+  estaba desplegado y publico en AWS desde noviembre, pero no habia
+  forma de verlo. Solo hablaba JSON por POST, y nadie abre una terminal
+  para mirar un portafolio.
+
+  Lo que NO es: el portafolio oficial. Ese sigue en Vercel, porque es el
+  enlace que ya tienen los reclutadores. Esta pagina habla con el
+  despliegue de AWS, que es el mismo motor sobre otra infraestructura.
+
+  Sobre la URL a la vista: esta en el codigo del cliente porque no hay
+  otro sitio donde pueda estar. Una pagina estatica que llama a una API
+  tiene que llevar la direccion dentro, y "ocultarla" en una variable no
+  oculta nada: cualquiera la lee en las herramientas del navegador. El
+  control real del gasto esta del otro lado, en el tope de consumo de la
+  cuenta de OpenAI. Decirlo es mas honesto que fingir que el endpoint es
+  secreto.
+
+  Sin dependencias externas: ni frameworks, ni CDN, ni fuentes remotas.
+  Para una pagina de un formulario y una lista, traer 80 KB de libreria
+  seria el mismo error que agregar API Gateway para poder decir que se
+  uso.
+-->
+
+<style>
+  :root {
+    --fondo: #fbfbfa;
+    --superficie: #ffffff;
+    --borde: #e4e2dd;
+    --texto: #1a1917;
+    --suave: #6b6862;
+    --tenue: #9a968e;
+    --acento: #b4502a;
+    --acento-fondo: #fdf3ef;
+    --codigo: #f4f2ee;
+    --sombra: 0 1px 2px rgba(26, 25, 23, .05), 0 4px 12px rgba(26, 25, 23, .04);
+    --radio: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fondo: #16161a;
+      --superficie: #1e1e23;
+      --borde: #32323a;
+      --texto: #eceae6;
+      --suave: #a5a19a;
+      --tenue: #6f6b65;
+      --acento: #e98a63;
+      --acento-fondo: #2a1f1a;
+      --codigo: #26262c;
+      --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 12px rgba(0, 0, 0, .2);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --fondo: #16161a;
+    --superficie: #1e1e23;
+    --borde: #32323a;
+    --texto: #eceae6;
+    --suave: #a5a19a;
+    --tenue: #6f6b65;
+    --acento: #e98a63;
+    --acento-fondo: #2a1f1a;
+    --codigo: #26262c;
+    --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 12px rgba(0, 0, 0, .2);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+    padding: 0 16px;
+  }
+
+  .envoltorio {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 0 64px;
+  }
+
+  /* --- cabecera --- */
+
+  header { margin-bottom: 28px; }
+
+  h1 {
+    font-size: 25px;
+    line-height: 1.25;
+    letter-spacing: -.015em;
+    margin: 0 0 10px;
+    font-weight: 650;
+  }
+
+  .bajada {
+    margin: 0;
+    color: var(--suave);
+    font-size: 15px;
+  }
+
+  .pila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .pieza {
+    font: 500 11.5px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: .02em;
+    padding: 5px 8px;
+    border-radius: 5px;
+    background: var(--codigo);
+    color: var(--suave);
+    white-space: nowrap;
+  }
+
+  /* --- aviso de arranque en frio --- */
+
+  .aviso {
+    margin: 22px 0 0;
+    padding: 12px 14px;
+    border-left: 2px solid var(--acento);
+    background: var(--acento-fondo);
+    border-radius: 0 6px 6px 0;
+    font-size: 13.5px;
+    color: var(--suave);
+  }
+
+  .aviso b { color: var(--texto); font-weight: 600; }
+
+  /* --- conversacion --- */
+
+  #conversacion {
+    margin: 28px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .turno { display: flex; flex-direction: column; gap: 7px; }
+
+  .quien {
+    font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--tenue);
+  }
+
+  .texto { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+  .turno.usuario .texto {
+    background: var(--codigo);
+    padding: 11px 14px;
+    border-radius: var(--radio);
+  }
+
+  .turno.error .texto { color: var(--acento); }
+
+  /* --- fuentes citadas --- */
+
+  .fuentes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 3px;
+  }
+
+  .fuente {
+    font: 11.5px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    padding: 4px 7px;
+    border: 1px solid var(--borde);
+    border-radius: 5px;
+    color: var(--suave);
+    background: var(--superficie);
+  }
+
+  .fuente span { color: var(--tenue); }
+
+  .medicion {
+    font: 11.5px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--tenue);
+    margin-top: 2px;
+  }
+
+  /* --- pensando --- */
+
+  .puntos span {
+    display: inline-block;
+    width: 5px; height: 5px;
+    margin-right: 3px;
+    border-radius: 50%;
+    background: var(--tenue);
+    animation: late 1.3s ease-in-out infinite;
+  }
+  .puntos span:nth-child(2) { animation-delay: .18s; }
+  .puntos span:nth-child(3) { animation-delay: .36s; }
+
+  @keyframes late {
+    0%, 60%, 100% { opacity: .25; transform: translateY(0); }
+    30%           { opacity: 1;   transform: translateY(-3px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .puntos span { animation: none; opacity: .5; }
+  }
+
+  /* --- formulario --- */
+
+  form { margin-top: 26px; }
+
+  .campo {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  textarea {
+    flex: 1;
+    min-height: 46px;
+    max-height: 160px;
+    resize: none;
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--texto);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+  }
+
+  textarea:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: -1px;
+    border-color: transparent;
+  }
+
+  button {
+    font: 600 14px/1 inherit;
+    padding: 0 18px;
+    height: 46px;
+    color: var(--fondo);
+    background: var(--texto);
+    border: 0;
+    border-radius: var(--radio);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  button:hover:not(:disabled) { opacity: .85; }
+  button:disabled { opacity: .35; cursor: default; }
+
+  button:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+  }
+
+  .contador {
+    font: 11.5px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--tenue);
+    text-align: right;
+    margin-top: 7px;
+    min-height: 12px;
+  }
+
+  .contador.limite { color: var(--acento); }
+
+  /* --- sugerencias --- */
+
+  .sugerencias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 14px;
+  }
+
+  .sugerencia {
+    font: 13px/1 inherit;
+    padding: 8px 12px;
+    color: var(--suave);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    cursor: pointer;
+    height: auto;
+  }
+
+  .sugerencia:hover { color: var(--texto); opacity: 1; }
+
+  /* --- pie --- */
+
+  footer {
+    margin-top: 44px;
+    padding-top: 20px;
+    border-top: 1px solid var(--borde);
+    font-size: 13.5px;
+    color: var(--suave);
+  }
+
+  footer p { margin: 0 0 10px; }
+  footer p:last-child { margin-bottom: 0; }
+
+  a { color: var(--acento); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  code {
+    font: 12.5px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--codigo);
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+
+  .vo {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="envoltorio">
+
+  <header>
+    <h1>Asistente RAG, corriendo en AWS Lambda</h1>
+    <p class="bajada">
+      Responde preguntas sobre el perfil profesional de Ferney Quintero y
+      cita de donde sacó cada respuesta. Lo que esta página consulta no es
+      un servidor cualquiera: es una función Lambda desplegada desde una
+      imagen de contenedor, con el índice de embeddings en S3, toda la
+      infraestructura declarada en Terraform y el despliegue automatizado
+      con GitHub Actions.
+    </p>
+
+    <div class="pila">
+      <span class="pieza">AWS Lambda</span>
+      <span class="pieza">Amazon ECR</span>
+      <span class="pieza">Amazon S3</span>
+      <span class="pieza">IAM / OIDC</span>
+      <span class="pieza">Terraform</span>
+      <span class="pieza">Docker</span>
+      <span class="pieza">GitHub Actions</span>
+      <span class="pieza">Python</span>
+      <span class="pieza">OpenAI</span>
+    </div>
+
+    <p class="aviso">
+      <b>La primera pregunta es lenta, entre 8 y 13 segundos.</b> Eso es un
+      arranque en frío: Lambda tiene que levantar el contenedor, importar
+      numpy y bajar el índice desde S3. Las siguientes bajan a unos 5
+      segundos, que son casi todos la llamada al modelo. No está roto, y
+      ese número aparece debajo de cada respuesta para que se pueda
+      comprobar.
+    </p>
+  </header>
+
+  <main>
+    <div id="conversacion" role="log" aria-live="polite" aria-label="Conversación"></div>
+
+    <form id="formulario">
+      <label class="vo" for="pregunta">Escribe tu pregunta</label>
+      <div class="campo">
+        <textarea id="pregunta" rows="1" maxlength="500" autocomplete="off"
+          placeholder="¿Qué experiencia tiene con AWS?"></textarea>
+        <button type="submit" id="enviar">Preguntar</button>
+      </div>
+      <div class="contador" id="contador" aria-hidden="true"></div>
+    </form>
+
+    <div class="sugerencias" id="sugerencias"></div>
+  </main>
+
+  <footer>
+    <p>
+      El portafolio oficial está en
+      <a href="https://ferney-portfolio.vercel.app">ferney-portfolio.vercel.app</a>,
+      que corre el mismo motor sobre Vercel. Esta página existe para poder
+      ver funcionando el despliegue de AWS, que antes solo se podía contar.
+    </p>
+    <p>
+      Código completo, incluido el Terraform y el pipeline:
+      <a href="https://github.com/ferquintero2013/rag-perfil-profesional">github.com/ferquintero2013/rag-perfil-profesional</a>.
+      El backend es una Function URL de Lambda y recibe
+      <code>POST {"question": "..."}</code>.
+    </p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var ENDPOINT = "https://iejbshwpnlv5vpc7oxfub6xxs40ztluy.lambda-url.us-east-1.on.aws/";
+  var MAX = 500;
+
+  // El backend recorta a 6 turnos y 2000 caracteres por turno, asi que
+  // mandar mas es gastar banda sin efecto. Se recorta aqui tambien.
+  var MAX_TURNOS = 6;
+
+  var conversacion = document.getElementById("conversacion");
+  var formulario   = document.getElementById("formulario");
+  var campo        = document.getElementById("pregunta");
+  var boton        = document.getElementById("enviar");
+  var contador     = document.getElementById("contador");
+  var sugerencias  = document.getElementById("sugerencias");
+
+  var historial = [];
+  var ocupado = false;
+
+  var EJEMPLOS = [
+    "¿Qué experiencia tiene con AWS?",
+    "¿Tiene experiencia con CI/CD?",
+    "¿Cuáles son sus proyectos?",
+    "¿Ha liderado equipos?",
+    "Does he know Kubernetes?"
+  ];
+
+  // --- pintar ---
+
+  function turno(clase, quien) {
+    var d = document.createElement("div");
+    d.className = "turno " + clase;
+
+    var q = document.createElement("div");
+    q.className = "quien";
+    q.textContent = quien;
+    d.appendChild(q);
+
+    var t = document.createElement("div");
+    t.className = "texto";
+    d.appendChild(t);
+
+    conversacion.appendChild(d);
+    return { caja: d, texto: t };
+  }
+
+  function pensando() {
+    var t = turno("asistente", "Asistente");
+    t.texto.innerHTML =
+      '<span class="puntos"><span></span><span></span><span></span></span>';
+    return t;
+  }
+
+  function pintarFuentes(caja, citadas) {
+    if (!citadas || !citadas.length) return;
+
+    var cont = document.createElement("div");
+    cont.className = "fuentes";
+
+    citadas.forEach(function (f) {
+      var e = document.createElement("span");
+      e.className = "fuente";
+      e.textContent = f.source || "?";
+      if (f.section) {
+        var s = document.createElement("span");
+        s.textContent = "  " + f.section;
+        e.appendChild(s);
+      }
+      cont.appendChild(e);
+    });
+
+    caja.appendChild(cont);
+  }
+
+  function pintarMedicion(caja, ms, primera) {
+    var e = document.createElement("div");
+    e.className = "medicion";
+    e.textContent = (ms / 1000).toFixed(2) + " s" +
+      (primera ? "  ·  incluye el arranque en frío" : "");
+    caja.appendChild(e);
+  }
+
+  // --- red ---
+
+  function preguntar(texto) {
+    var primera = historial.length === 0;
+    var arranque = Date.now();
+
+    turno("usuario", "Tú").texto.textContent = texto;
+    var espera = pensando();
+    bloquear(true);
+
+    fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        question: texto,
+        history: historial.slice(-MAX_TURNOS)
+      })
+    })
+    .then(function (r) {
+      // Se lee el cuerpo siempre: el backend manda su propio motivo en
+      // los 400, y perderlo para mostrar "error 400" es tirar la unica
+      // informacion util que llego.
+      return r.json().then(function (datos) {
+        return { ok: r.ok, estado: r.status, datos: datos };
+      }).catch(function () {
+        return { ok: false, estado: r.status, datos: null };
+      });
+    })
+    .then(function (res) {
+      var ms = Date.now() - arranque;
+
+      if (!res.ok || !res.datos || !res.datos.answer) {
+        var motivo = (res.datos && res.datos.error) ||
+          ("El servidor respondió " + res.estado + " sin detalle.");
+        fallo(espera, motivo);
+        return;
+      }
+
+      espera.caja.className = "turno asistente";
+      espera.texto.textContent = res.datos.answer;
+      pintarFuentes(espera.caja, res.datos.cited);
+      pintarMedicion(espera.caja, ms, primera);
+
+      historial.push({ rol: "user", texto: texto });
+      historial.push({ rol: "assistant", texto: res.datos.answer });
+
+      bloquear(false);
+    })
+    .catch(function (e) {
+      // Aqui cae lo que nunca llego a ser una respuesta: sin red, DNS
+      // caido, o CORS. El navegador no distingue cual por diseno, asi
+      // que el mensaje no puede prometer mas de lo que sabe.
+      fallo(espera, "No se pudo contactar la función. Puede ser la red, " +
+        "o que la función esté caída. Detalle del navegador: " + e.message);
+    });
+  }
+
+  function fallo(espera, motivo) {
+    espera.caja.className = "turno error";
+    espera.texto.textContent = motivo;
+    bloquear(false);
+  }
+
+  function bloquear(si) {
+    ocupado = si;
+    boton.disabled = si;
+    boton.textContent = si ? "Pensando" : "Preguntar";
+    if (!si) campo.focus();
+  }
+
+  // --- entrada ---
+
+  function enviar() {
+    if (ocupado) return;
+
+    var texto = campo.value.trim();
+    if (!texto) return;
+
+    campo.value = "";
+    ajustarAlto();
+    actualizarContador();
+    sugerencias.hidden = true;
+    preguntar(texto);
+  }
+
+  function ajustarAlto() {
+    campo.style.height = "auto";
+    campo.style.height = Math.min(campo.scrollHeight, 160) + "px";
+  }
+
+  function actualizarContador() {
+    var n = campo.value.length;
+    // Solo aparece cerca del limite. Un contador siempre visible es ruido
+    // para una caja en la que casi nadie escribe 500 caracteres.
+    if (n < MAX - 100) {
+      contador.textContent = "";
+      contador.className = "contador";
+      return;
+    }
+    contador.textContent = n + " / " + MAX;
+    contador.className = n >= MAX ? "contador limite" : "contador";
+  }
+
+  formulario.addEventListener("submit", function (e) {
+    e.preventDefault();
+    enviar();
+  });
+
+  campo.addEventListener("input", function () {
+    ajustarAlto();
+    actualizarContador();
+  });
+
+  campo.addEventListener("keydown", function (e) {
+    // Enter envia, Shift+Enter hace salto de linea. Es lo que la gente
+    // espera de una caja de chat, y lo contrario de lo que hace un
+    // textarea por defecto.
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      enviar();
+    }
+  });
+
+  EJEMPLOS.forEach(function (texto) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "sugerencia";
+    b.textContent = texto;
+    b.addEventListener("click", function () {
+      if (ocupado) return;
+      sugerencias.hidden = true;
+      preguntar(texto);
+    });
+    sugerencias.appendChild(b);
+  });
+
+  campo.focus();
+})();
+</script>
+</body>
+</html>

@@ -119,7 +119,13 @@ if __name__ == "__main__":
     if fallos:
         print(f"{fallos} archivo(s) sin copiar. Revisa antes de desplegar.")
     else:
+        # Este mensaje decia que para AWS habia que reconstruir la imagen
+        # y correr update-function-code a mano. Dejo de ser verdad el
+        # 10 de noviembre de 2026, cuando el despliegue paso a GitHub
+        # Actions, y siguio impreso una semana mas. Un mensaje
+        # desactualizado es peor que no tener mensaje: se obedece.
         print("Para que el cambio llegue a produccion:")
         print("  Vercel  en el repositorio del portafolio: git add api/ y push")
-        print("  AWS     reconstruir la imagen, subirla a ECR y")
-        print("          aws lambda update-function-code")
+        print("  AWS     el codigo lo despliega el pipeline al hacer push")
+        print("          a main. El indice no va en la imagen: se sube")
+        print("          con publicar_indice.py y no necesita redespliegue.")
