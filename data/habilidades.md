@@ -101,14 +101,19 @@ No se asignan niveles numericos en esta seccion a proposito. La evidencia es el 
 | Amazon S3 | Indice de embeddings, con acceso publico bloqueado y lectura solo desde el rol de la funcion | 2026-11 |
 | AWS IAM | Rol de ejecucion con menor privilegio: `s3:GetObject` sobre un unico prefijo | 2026-11 |
 | Amazon CloudWatch | Logs con retencion definida, y analisis de `Init Duration` para medir arranques en frio | 2026-11 |
-| Terraform | Los 8 recursos del despliegue, incluyendo importar al estado infraestructura creada antes a mano | 2026-11 |
+| Terraform | Los 11 recursos del despliegue, incluyendo importar al estado infraestructura creada antes a mano | 2026-11 |
+| GitHub Actions | Pipeline de despliegue a AWS: construye la imagen, la publica en ECR, actualiza la funcion y corre una prueba de humo | 2026-11 |
+| OIDC / AWS STS | Autenticacion federada de GitHub contra AWS sin llaves guardadas, con la politica de confianza acotada a un repositorio y una rama | 2026-11 |
+| AWS CloudTrail | Diagnostico de un rechazo de `AssumeRoleWithWebIdentity` que no dejaba rastro en los logs de la aplicacion | 2026-11 |
 | Docker | Imagen sobre la base de Lambda para Python, con las dependencias compiladas en el sistema destino | 2026-11 |
 | Vercel | Despliegue oficial del portafolio y de la API del asistente | 2026-11 |
 | Supabase / Postgres | Registro de consultas del asistente en produccion | 2026-11 |
 
-**Lo que sabe hacer, en concreto:** desplegar una funcion desde contenedor y no desde zip cuando las dependencias traen binarios compilados; separar los datos del despliegue para poder actualizar sin redesplegar; escribir una politica de permisos acotada en vez de copiar una abierta; medir una decision de configuracion y corregirla cuando el dato la contradice; y depurar un fallo que no deja rastro en los logs descartando hipotesis con evidencia.
+**Lo que sabe hacer, en concreto:** desplegar una funcion desde contenedor y no desde zip cuando las dependencias traen binarios compilados; separar los datos del despliegue para poder actualizar sin redesplegar; escribir una politica de permisos acotada en vez de copiar una abierta; montar un despliegue continuo con autenticacion federada por OIDC en lugar de claves de acceso guardadas en el repositorio, y explicar por que la condicion de la politica de confianza es la cerradura y no el proveedor; distinguir que configuracion es dueno Terraform y que version del codigo es dueno el pipeline, para que un `apply` no revierta un despliegue; medir una decision de configuracion y corregirla cuando el dato la contradice; y depurar un fallo que no deja rastro en los logs descartando hipotesis con evidencia.
 
 **Lo que no tiene, y conviene decirlo:** no ha operado Kubernetes ni EKS, no ha trabajado con ECS en un entorno real, no ha gestionado infraestructura en produccion para una organizacion, y su experiencia con Azure y GCP es nula. Lo que hay es un sistema propio, completo y publico, no anos de operacion a escala.
+
+**Sobre CI/CD, con precision:** lo que tiene montado es la parte de entrega continua, no la de integracion. El pipeline construye, publica, despliega y corre una prueba de humo, pero no hay suite de pruebas ejecutandose sobre cada pull request ni proteccion de rama configurada, porque el repositorio es de un solo autor. Si en una entrevista preguntan si tiene CI/CD, la respuesta honesta es que tiene CD real y funcionando, y que la pieza de CI es el siguiente paso. Esa distincion la conoce y la sabe explicar, que es mas de lo que muchos candidatos que responden "si" pueden hacer.
 
 **Formacion:** AWS Certified Cloud Practitioner. La certificacion es anterior a este trabajo practico y cubre fundamentos, no implementacion.
 

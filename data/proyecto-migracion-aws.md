@@ -21,7 +21,9 @@ El punto de partida fue un diagnostico, no una curiosidad: al revisar las oferta
 | S3 | Guarda el indice de embeddings, con acceso publico bloqueado |
 | IAM | Rol propio de la funcion, con permiso de lectura sobre un solo prefijo |
 | CloudWatch | Logs con 14 dias de retencion |
-| Terraform | Los 8 recursos, declarados y versionados |
+| GitHub Actions | Despliega en cada push a `main` que toque el codigo de la funcion |
+| IAM / OIDC | GitHub se autentica sin llaves guardadas, asumiendo un rol con permisos acotados al despliegue |
+| Terraform | Los 11 recursos, declarados y versionados |
 
 ## Decisiones tecnicas destacadas
 
@@ -39,6 +41,22 @@ El punto de partida fue un diagnostico, no una curiosidad: al revisar las oferta
 
 **Sin API Gateway.** Aporta autenticacion, limites de tasa y dominios propios, y aqui no hacia falta nada de eso. Se uso una Function URL. Agregar un servicio solo para poder decir que se uso es sobreingenieria, y un buen entrevistador lo pregunta.
 
+## Despliegue automatico
+
+Hasta noviembre el despliegue era manual: construir la imagen, subirla a ECR y correr `update-function-code` a mano. Eso se automatizo con GitHub Actions. El pipeline se dispara en cada push a `main` que toque el codigo de la funcion, y tambien a mano cuando hace falta. Los cambios de Terraform estan excluidos del disparador a proposito: la infraestructura se aplica deliberadamente, no por empujar un commit.
+
+**Primero la entrega, no la validacion.** Lo que hay montado hoy es la parte de entrega. No hay suite de pruebas corriendo sobre cada pull request, y conviene decirlo asi en vez de llamarlo "CI/CD" sin matices. Lo que sustituye a las pruebas por ahora es una prueba de humo al final del despliegue.
+
+**Sin llaves guardadas, con OIDC.** La alternativa habitual es crear un usuario IAM, generar una clave de acceso y pegarla en los secretos del repositorio. Esa clave no expira y sirve desde cualquier parte: si se filtra, sigue funcionando. En vez de eso, GitHub firma un token en cada ejecucion que declara de que repositorio y de que rama viene. AWS verifica la firma contra un proveedor OIDC registrado, comprueba esa declaracion contra la condicion del rol, y entrega credenciales que caducan con el trabajo. Es un pase de visitante, no una copia de la llave.
+
+Son tres piezas distintas, y confundirlas es el error tipico: el proveedor OIDC dice "confia en lo que firme GitHub"; la politica de confianza del rol dice "pero solo desde este repositorio y esta rama"; y la politica de permisos dice "y esto es todo lo que puede hacer". La condicion es la cerradura de verdad. Sin ella, cualquier repositorio de GitHub podria asumir el rol.
+
+**Permisos acotados al trabajo.** El rol del pipeline no es administrador. Puede pedir el token de ECR, empujar y leer imagenes en un unico repositorio, y actualizar el codigo de una unica funcion. No puede crear infraestructura, ni borrar nada, ni tocar otra funcion.
+
+**La frontera de propiedad entre Terraform y el pipeline.** Terraform declara que la funcion existe y como esta configurada. El pipeline decide que version del codigo corre dentro. Si no se marca `image_uri` como ignorado en el ciclo de vida del recurso, el siguiente `terraform apply` revierte en silencio el ultimo despliegue, porque para Terraform la etiqueta de imagen que tiene escrita es la verdad. Terraform es dueno de los recursos; el pipeline es dueno de la version del codigo.
+
+**Una prueba de humo que no cuesta nada.** Al terminar, el pipeline invoca la funcion con un cuerpo vacio. El handler devuelve 400 antes de llamar a OpenAI, asi que no gasta un solo token. Pero para llegar a ese 400 la funcion ya tuvo que arrancar la imagen nueva, importar numpy y bajar el indice desde S3, porque el indice se carga al importar el modulo y no dentro del handler. Si cualquiera de esas tres cosas falla, el trabajo falla. Es la verificacion mas barata que cubre el arranque completo.
+
 ## Lo que midio, y lo que la medicion desmintio
 
 La migracion se cerro midiendola, no declarandola terminada.
@@ -47,7 +65,7 @@ La migracion se cerro midiendola, no declarandola terminada.
 
 **La configuracion de memoria estaba justificada con una creencia, no con un dato.** Se habia puesto 1024 MB con el argumento, muy repetido, de que en Lambda la memoria asigna CPU y por tanto acelera el arranque. Al medir cuatro arranques en frio por tamano, la diferencia entre 512 y 2048 MB fue de 35 ms, mientras la dispersion dentro de un mismo tamano era de 617 ms. El arranque de este sistema es espera de disco y red, no calculo, y la CPU de mas no acelera una espera. Se bajo a 512 MB: la mitad de costo, el mismo rendimiento.
 
-## Dos problemas que costaron tiempo, y como se resolvieron
+## Problemas que costaron tiempo, y como se resolvieron
 
 **Un 403 sin rastro en los logs.** Una Function URL publica necesita dos permisos de Lambda, no uno: `lambda:InvokeFunctionUrl` con la condicion del tipo de autenticacion, y `lambda:InvokeFunction` sin ella. Con solo el primero, la URL devuelve `403 AccessDeniedException` a todo el mundo y la funcion ni se entera, porque la peticion muere en el borde sin dejar una linea en CloudWatch. La documentacion describe el primero y la consola crea los dos en silencio, de donde sale el clasico "desde la consola funciona pero por codigo no".
 
@@ -57,6 +75,14 @@ Antes de encontrarlo se descartaron, con evidencia, seis hipotesis: politica cor
 
 La leccion, que es la que importa: anadir un despliegue sin extender el mecanismo de distribucion crea una copia huerfana, y una copia huerfana que funciona es peor que una que falla, porque nadie la revisa. El script ahora distribuye a los dos destinos desde un solo origen.
 
+**Un `AccessDenied` que el log no podia explicar.** El primer despliegue automatico fallo al asumir el rol. La politica de confianza desplegada coincidia exactamente con lo que se habia escrito, y el registro de GitHub solo decia que no estaba autorizado, sin mas. Esa parquedad es deliberada: explicar por que se rechaza un token seria filtrar informacion a traves de la frontera de confianza, asi que AWS no lo explica. El diagnostico estaba al otro lado, en el evento `AssumeRoleWithWebIdentity` de CloudTrail, que si guarda el sujeto que se presento de verdad.
+
+La causa: GitHub ya no manda el nombre del repositorio en texto plano, sino identificadores inmutables, con la forma `repo:propietario@id/repositorio@id:ref:refs/heads/main`. La condicion estaba escrita con el nombre simple y nunca podia coincidir. El cambio no es un detalle burocratico: ata el permiso a una identidad y no a un nombre, de modo que un repositorio borrado y vuelto a crear con el mismo nombre no hereda el acceso.
+
+**Una imagen que se construia bien y Lambda rechazaba.** Con el rol ya funcionando, el despliegue fallo al actualizar la funcion: el tipo de medio del manifiesto no era compatible. Lambda exige un manifiesto unico en formato Docker v2 esquema 2. BuildKit, que es el constructor por defecto hoy, emite tipos de medio OCI y adjunta ademas certificados de procedencia y un inventario de dependencias, lo que convierte la publicacion en una lista de manifiestos en vez de uno solo. Nada de eso se ve construyendo en local; aparece al desplegar. Se resolvio desactivando esos adjuntos y pidiendo explicitamente tipos de medio de Docker.
+
+Las dos fallas comparten una leccion: el error aparece donde esta la frontera, y "funciona en mi maquina" no ejercita la frontera del despliegue. Produccion nunca se vio afectada, porque la actualizacion fallo y la imagen anterior siguio atendiendo.
+
 ## Higiene de la cuenta
 
 Antes de crear nada se reviso la cuenta. Habia un usuario IAM sin usar desde hacia 604 dias con permisos de administrador y acceso a consola sin segundo factor. Se elimino. Se activo MFA en la raiz, se creo un usuario de solo linea de comandos para el trabajo diario y se puso un presupuesto mensual con alerta antes de desplegar el primer recurso.
@@ -65,6 +91,8 @@ Antes de crear nada se reviso la cuenta. Habia un usuario IAM sin usar desde hac
 
 - Despliegue en AWS de un sistema real, no de un ejercicio
 - Infraestructura como codigo, que era el requisito literal de varias ofertas
+- Despliegue continuo real, con autenticacion federada sin llaves guardadas y permisos acotados al despliegue
+- Criterio para separar lo que es dueno Terraform de lo que es dueno el pipeline
 - Contenedores aplicados a un problema concreto y explicable
 - Permisos disenados con menor privilegio, no copiados de un tutorial
 - Observabilidad con retencion y control de costo definidos desde el principio
@@ -73,4 +101,4 @@ Antes de crear nada se reviso la cuenta. Habia un usuario IAM sin usar desde hac
 
 ## Tecnologias
 
-AWS Lambda, Amazon ECR, Amazon S3, AWS IAM, Amazon CloudWatch, Terraform, Docker, Python, boto3, numpy.
+AWS Lambda, Amazon ECR, Amazon S3, AWS IAM, AWS STS, AWS CloudTrail, Amazon CloudWatch, Terraform, Docker, BuildKit, GitHub Actions, OIDC, Python, boto3, numpy.
