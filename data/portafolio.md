@@ -79,14 +79,17 @@ de 2026.
 - **Codigo fuente**: https://github.com/ferquintero2013/langgraph-doc-assistant
 - **Nota**: es una demostracion tecnica independiente sobre documentacion publica de terceros, sin afiliacion con la empresa cuya documentacion se uso.
 
-### 4. MVP de Validacion Inteligente de Documentos con IA (UTEL) — PUBLICO
-- **Descripcion**: Sistema de hiperautomatizacion que valida expedientes de admision universitaria. Extrae datos de documentos con GPT-4o Vision, aplica reglas de negocio auditables, hace cross-check de identidad entre documentos para detectar posibles suplantaciones, y genera notificaciones personalizadas al aspirante con IA.
+### 4. MVP de Validacion Inteligente de Documentos con IA (UTEL): PUBLICO
+- **Descripcion**: Sistema de hiperautomatizacion que valida expedientes de admision universitaria. Extrae datos de documentos con GPT-4o Vision, aplica reglas de negocio auditables, hace cross-check de identidad entre documentos para detectar posibles suplantaciones, y genera notificaciones personalizadas al aspirante con IA. Cualquiera puede probarlo con un expediente de ejemplo o subiendo sus propias imagenes.
 - **Rol**: Arquitecto y desarrollador unico (100% del codigo, diseno y deploy)
-- **Tecnologias**: Python 3.14, Streamlit, OpenAI GPT-4o Vision + GPT-4o-mini, GitHub API, reglas deterministas de negocio, deploy en Streamlit Community Cloud. Construido usando Claude Code como companero de desarrollo.
+- **Tecnologias**: Python 3.14, Streamlit, OpenAI GPT-4o Vision + GPT-4o-mini, Pillow, GitHub API como fuente institucional simulada, reglas deterministas de negocio, deploy en Streamlit Community Cloud. Construido usando Claude Code como companero de desarrollo.
 - **Impacto/Resultados**: Reduccion de ~14 minutos a ~5 segundos por documento (99% menos tiempo). Cross-check de identidad = capacidad nueva que no existia en el proceso manual. Notificacion al aspirante 100% automatizada. Trazabilidad completa para auditoria.
-- **Arquitectura**: 6 modulos Python con separacion de responsabilidades — ingesta, extraccion con Vision AI, validacion por reglas de negocio, analisis de expediente con cross-check, generacion de notificacion, UI.
-- **Decisiones de diseno destacadas**: hibrido IA + reglas deterministas (la IA extrae, las reglas deciden), anti-alucinacion via auto-declaracion de confianza del modelo, jerarquia de decision por severidad, modelos distintos por caso de uso (GPT-4o para extraccion critica, GPT-4o-mini 10x mas barato para redaccion).
-- **Periodo**: Agosto - Septiembre 2026
+- **Arquitectura**: 7 modulos Python con una responsabilidad cada uno: dos fuentes de ingesta (sistema institucional simulado y archivos que sube el usuario), extraccion con Vision AI, validacion por reglas de negocio, analisis de expediente con cross-check, generacion de notificacion, UI.
+- **Dos fuentes, un solo contrato**: el modulo de carga de archivos devuelve exactamente la misma estructura que el de la fuente institucional, con las mismas cuatro claves. Lo unico que cambia es un campo: en un caso es una direccion http y en el otro un data URI con la imagen en base64, y el campo `image_url` de la API de OpenAI acepta las dos cosas. Por eso agregar la carga de archivos no toco ni la extraccion ni las reglas de negocio.
+- **Decisiones de diseno destacadas**: hibrido IA + reglas deterministas (la IA extrae, las reglas deciden; el modelo nunca dictamina, devuelve JSON); el indice de confianza lo declara el propio modelo, no es una probabilidad calibrada ni la calcula ninguna libreria, y por eso no decide solo: es una de cinco reglas y las otras cuatro si son deterministas; jerarquia de decision por severidad; modelos distintos por caso de uso (GPT-4o para extraccion critica, GPT-4o-mini 10x mas barato para redaccion).
+- **Confidencialidad, documentada como limitacion**: la solucion no incluye filtro de que puede salir hacia un LLM, y el repositorio dice eso de frente junto con los tres caminos para construirlo (terminos de confidencialidad en el contrato con el proveedor, lista explicita de campos que pueden salir, o modelo en infraestructura propia, que es lo mas seguro y lo mas caro). La interfaz advierte que la imagen viaja a la API de OpenAI y pide no subir documentos de identidad reales.
+- **Pruebas**: 28 verificaciones que no llaman a ninguna API y no gastan tokens, sobre el contrato compartido entre las dos fuentes, la normalizacion de imagenes (reescalado, rotacion EXIF, metadatos descartados antes de enviar) y las reglas del validador.
+- **Periodo**: Agosto 2026 a noviembre 2026
 - **Demo publico**: https://postulaciones-mvp.streamlit.app/
 - **Codigo fuente**: https://github.com/ferquintero2013/postulaciones-mvp-utel
 

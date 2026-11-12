@@ -145,10 +145,11 @@ Sistema RAG que responde preguntas sobre mi trayectoria profesional usando unica
 - **Demo publico**: integrado en el portafolio, https://ferney-portfolio.vercel.app/
 - **Codigo**: https://github.com/ferquintero2013/rag-perfil-profesional
 
-### MVP de Validacion Inteligente de Documentos con IA | Agosto - Septiembre 2026
-Sistema end-to-end de validacion automatizada de expedientes de admision universitaria, construido integramente en Python. Extrae datos de documentos con GPT-4o Vision, aplica reglas de negocio auditables, hace cross-check de identidad entre documentos para detectar posibles suplantaciones, y genera notificaciones personalizadas con IA.
-- **Stack**: Python 3.14, Streamlit, OpenAI GPT-4o Vision + GPT-4o-mini, GitHub API. Desarrollado con Claude Code.
+### MVP de Validacion Inteligente de Documentos con IA | Agosto a noviembre 2026
+Sistema end-to-end de validacion automatizada de expedientes de admision universitaria, construido integramente en Python. Extrae datos de documentos con GPT-4o Vision, aplica reglas de negocio auditables, hace cross-check de identidad entre documentos para detectar posibles suplantaciones, y genera notificaciones personalizadas con IA. Admite dos fuentes de documentos, un expediente de ejemplo o imagenes que suba el usuario, detras del mismo contrato de datos.
+- **Stack**: Python 3.14, Streamlit, OpenAI GPT-4o Vision + GPT-4o-mini, Pillow, GitHub API. Desarrollado con Claude Code.
 - **Resultado**: reduccion de ~14 min a ~5 seg por documento (99%). Cross-check de identidad como capacidad nueva. 100% de notificaciones automatizadas.
+- **Diseno**: la IA extrae y las reglas deciden. El indice de confianza lo declara el propio modelo, asi que no decide solo: es una de cinco reglas y las otras cuatro son deterministas. 28 pruebas locales que no consumen tokens.
 - **Demo publico**: https://postulaciones-mvp.streamlit.app/
 - **Codigo**: https://github.com/ferquintero2013/postulaciones-mvp-utel
 
